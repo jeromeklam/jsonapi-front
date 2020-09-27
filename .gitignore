@@ -1,0 +1,6 @@
+.project
+.DS_Store
+node_modules
+dist/
+_book/
+coverage/

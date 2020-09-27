@@ -1,0 +1,102 @@
+{
+  "name": "jsonapi-tools",
+  "version": "1.0.0",
+  "description": "JsonApi Tools",
+  "keywords": [
+    "jsonapi"
+  ],
+  "license": "MIT",
+  "author": "Jérôme KLAM",
+  "homepage": "http://github.com/jeromeklam/jsonapi-tools.git",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jeromeklam/jsonapi-tools.git"
+  },
+  "bugs": {
+    "mail": "jeromeklam@free.fr",
+    "url": "http://github.com/jeromeklam/jsonapi-tools/issues"
+  },
+  "main": "dist/jsonapi-tools.js",
+  "scripts": {
+    "clean": "rimraf ./coverage ./dist",
+    "dev": "cross-env NODE_ENV=development rollup -c -o dist/jsonapi-tools.js",
+    "build": "cross-env NODE_ENV=production rollup -c -o dist/jsonapi-tools.js",
+    "test": "cross-env NODE_ENV=test jest",
+    "doc:jsdoc": "cross-env NODE_ENV=development jsdoc -c jsdoc.json -d doc",
+    "doc:mddoc": "cross-env NODE_ENV=development jsdoc2md --configure jsdoc2md.json --files src/*.js > doc/api.md",
+    "doc:all": "npm run doc:jsdoc && npm run doc:mddoc",
+    "doc:prepare": "cross-env NODE_ENV=development gitbook install",
+    "doc:serve": "npm run doc:prepare && npm run doc:mddoc && gitbook serve",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:cover": "cross-env NODE_ENV=test jest --coverage",
+    "coveralls": "npm run test:cover && cat ./coverage/lcov.info | coveralls",
+    "flow": "flow",
+    "flow-typed": "npm run clean && flow-typed install --overwrite || true",
+    "lint": "eslint src",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "lodash": "^4.17.19",
+    "loglevel": "^1.6.8"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/",
+    "modulePaths": [
+      "<rootDir>/src"
+    ],
+    "globals": {
+      "NODE_ENV": "test"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx)?$": "<rootDir>/node_modules/babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!lodash-es)"
+    ],
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "aurelia-(.*)": "<rootDir>/node_modules/$1"
+    }
+  },
+  "devDependencies": {
+    "babel-core": "6.26.0",
+    "babel-eslint": "8.2.3",
+    "babel-jest": "^23",
+    "babel-plugin-module-resolver": "3.1.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "1.6.1",
+    "babel-preset-flow": "6.23.0",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-stage-0": "6.24.1",
+    "coveralls": "3.0.0",
+    "cross-env": "^5.1.4",
+    "enzyme": "3.3.0",
+    "enzyme-adapter-react-16": "^1.15.5",
+    "eslint": "4.19.1",
+    "eslint-config-airbnb": "16.1.0",
+    "eslint-plugin-import": "2.11.0",
+    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-react": "^7.21.2",
+    "flow-bin": "0.70.0",
+    "flow-typed": "2.4.0",
+    "fs-file-tree": "1.0.6",
+    "gitbook-cli": "^2.3.2",
+    "jest": "22.4.3",
+    "jsdoc": "^3.6.4",
+    "jsdoc-to-markdown": "^6.0.1",
+    "rimraf": "2.6.2",
+    "rollup": "0.58.1",
+    "rollup-plugin-babel": "3.0.3",
+    "rollup-plugin-commonjs": "9.1.0",
+    "rollup-plugin-node-resolve": "3.3.0",
+    "rollup-plugin-replace": "2.0.0",
+    "rollup-plugin-uglify": "3.0.0"
+  }
+}

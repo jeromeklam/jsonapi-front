@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: model.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: model.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * uniqueId
+ *
+ * @ignore
+ */
+function uniqueId(objectName, id) {
+  if (!id) {
+    return null;
+  }
+  return `${objectName}${id}`;
+}
+
+/**
+ * getNewModel : Retourne un nouveau modèle de travail
+ *
+ * @param {string}          p_type
+ * @param {(string|number)} p_id
+ * @param {Object}          p_attributes
+ *
+ * @returns {Object}
+ */
+export function getNewModel(p_type, p_id, p_attributes = {}) {
+  let id = p_id;
+  if (id &amp;&amp; !isNaN(id)) {
+    id = parseInt(id, 10);
+  }
+  const newItem = {
+    id: id,
+    type: p_type
+  };
+  if (p_attributes.length > 0) {
+    return {...p_attributes, ...newItem};
+  }
+  return newItem;
+}
+
+/**
+ * @ignore
+ */
+function buildModelRelationship(reducer, target, relationship, options, cache, level = 0, done = []) {
+  const { ignoreLinks } = options;
+  const rel = target.relationships[relationship];
+  if (typeof rel.data !== 'undefined') {
+    if (Array.isArray(rel.data)) {
+      return rel.data.map(
+        child => buildModel(reducer, child.type, child.id, options, cache, level + 1, done) || child,
+      );
+    } else if (rel.data === null) {
+      return null;
+    }
+    return buildModel(reducer, rel.data.type, rel.data.id, options, cache, level + 1, done) || rel.data;
+  } else {
+    if (Array.isArray(rel)) {
+      return rel.map(
+        child => buildModel(reducer, child.type, child.id, options, cache, level + 1, done) || child,
+      );
+    }
+    if (!ignoreLinks &amp;&amp; rel.links) {
+      throw new Error(
+        "Remote lazy loading is not supported. To disable this error, include option 'ignoreLinks: true' in the buildModel function like so: buildModel(reducer, type, id, { ignoreLinks: true })",
+      );
+    }
+  }
+  return [];
+}
+
+/**
+ * buildModel from a JsonApiNormalizer object
+ *
+ * @param {Object} reducer - JsonApi Object
+ * @param {string} objectName
+ * @param {(string|number)}  id
+ * @param {Object} providedOpts
+ * @param {Object} cache
+ */
+export function buildModel(reducer, objectName, id = null, providedOpts = {}, cache = {}, level = 0, done = []) {
+  const defOpts = { eager: false, ignoreLinks: false, includeType: true, includeId: true };
+  const options = Object.assign({}, defOpts, providedOpts);
+  const { eager, includeType, includeId } = options;
+  if (!reducer || !reducer[objectName]) {
+    return null;
+  }
+  if ((level === 0 &amp;&amp; id === null) || Array.isArray(id)) {
+    if (reducer['MAINELEM'] === objectName) {
+      const idList = reducer['SORTEDELEMS'];
+      return idList.map(e => buildModel(reducer, objectName, e, options, cache, level + 1));
+    }
+    const idList2 = id || Object.keys(reducer[objectName]);
+    return idList2.map(e => buildModel(reducer, objectName, e, options, cache, level + 1));
+  }
+  const ids = id.toString();
+  const uuid = uniqueId(objectName, ids);
+  const cachedObject = cache[uuid];
+  if (cachedObject &amp;&amp; eager) {
+    const clone = JSON.parse(JSON.stringify(cachedObject));
+    return clone;
+  }
+  const ret = {};
+  const target = reducer[objectName][ids];
+  if (!target) {
+    return null;
+  }
+  if (includeId &amp;&amp; target.id) {
+    ret.id = target.id;
+  }
+  Object.keys(target.attributes).forEach((key) => {
+    ret[key] = target.attributes[key];
+  });
+  if (includeType &amp;&amp; !ret.type) {
+    ret.type = objectName;
+  }
+  cache[uuid] = ret;
+  const found = done.find((elem) => { return (elem.type === ret.type &amp;&amp; elem.id === ret.id); });
+  if (target.relationships &amp;&amp; !found) {
+    done.push({ type: ret.type, id: ret.id });
+    Object.keys(target.relationships).forEach((relationship) => {
+      if (eager) {
+        ret[relationship] = buildModelRelationship(reducer, target, relationship, options, cache, level, done);
+      } else {
+        Object.defineProperty(ret, relationship, {
+          get: () => {
+            const field = `__${relationship}`;
+            if (ret[field]) {
+              return ret[field];
+            }
+            ret[field] = buildModelRelationship(reducer, target, relationship, options, cache, level, done);
+            return ret[field];
+          },
+          set: (value) => {
+            const field = `__${relationship}`;
+            ret[field] = value;
+          },
+        });
+      }
+    });
+  }
+  if (includeId &amp;&amp; typeof ret.id === 'undefined') {
+    ret.id = ids;
+  }
+  return ret;
+}
+
+/**
+ * buildFirstModel : Retourne le premier modèle disponible dans une utilisateur
+ *
+ * @param {Object} p_obj   L'object au format normalisé
+ * @param {string} p_type  Le type de l'objet
+ *
+ * @return {(Object|null)}
+ */
+export function buildFirstModel(p_obj, p_type) {
+  const models = buildModel(p_obj, p_type);
+  if (models &amp;&amp; models.length > 0) {
+    return models[0];
+  }
+  return null;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addRelationships">addRelationships</a></li><li><a href="global.html#buildFirstModel">buildFirstModel</a></li><li><a href="global.html#buildModel">buildModel</a></li><li><a href="global.html#getFieldError">getFieldError</a></li><li><a href="global.html#getFieldErrorMessage">getFieldErrorMessage</a></li><li><a href="global.html#getJsonApi">getJsonApi</a></li><li><a href="global.html#getJsonApiWithRelationships">getJsonApiWithRelationships</a></li><li><a href="global.html#getNewJsonApi">getNewJsonApi</a></li><li><a href="global.html#getNewModel">getNewModel</a></li><li><a href="global.html#getNewNormalizedObject">getNewNormalizedObject</a></li><li><a href="global.html#jsonApiNormalizer">jsonApiNormalizer</a></li><li><a href="global.html#jsonApiRemove">jsonApiRemove</a></li><li><a href="global.html#jsonApiUpdate">jsonApiUpdate</a></li><li><a href="global.html#objectToQueryString">objectToQueryString</a></li><li><a href="global.html#queryStringToObject">queryStringToObject</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Wed Jul 15 2020 10:14:03 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

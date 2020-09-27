@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: normalizer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: normalizer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import camelCase from 'lodash/camelCase';
+import isArray from 'lodash/isArray';
+import isNull from 'lodash/isNull';
+import keys from 'lodash/keys';
+import merge from 'lodash/merge';
+import log from 'loglevel';
+
+/**
+ * getNewNormalizedObject : Return an empty normalized object
+ *
+ * @param {string} p_type          Le type
+ * @param {(string|number)} p_id   L'identifiant
+ *
+ * @return {Object}
+ */
+export function getNewNormalizedObject(p_type, p_id = null) {
+  const myLogger = log.getLogger('freejsonapi.getNewNormalizedObject');
+  myLogger.info('freejsonapi.getNewNormalizedObject.start');
+  let json = {};
+  json[p_type] = {};
+  json.SORTEDELEMS = [];
+  json.MAINELEM = p_type;
+  json.errors = [];
+  if (p_id &amp;&amp; p_id !== null) {
+    const id = isNaN(p_id) ? p_id : parseInt(p_id, 10);
+    json.SORTEDELEMS.push(id);
+    json[p_type][p_id.toString()] = {
+      id: id,
+      attributes: {}
+    };
+    json.length = 1;
+  }
+  myLogger.debug(json);
+  myLogger.info('freejsonapi.getNewNormalizedObject.end');
+  return json;
+};
+
+/**
+ * getNewJsonApi : Return an empty JsonApi object
+ *
+ * @param {string} p_type         Le type
+ * @param {(string|number)} p_id  L'identifiant
+ * @param {Object} p_attributes   Les attributs
+ *
+ * @return {Object}
+ */
+export function getNewJsonApi(p_type, p_id = null, p_attributes = {}) {
+  let id = p_id;
+  if (id === null || id === 0 || id === '0' || id === '') {
+    id = null;
+  } else {
+    id = isNaN(p_id) ? p_id : parseInt(p_id, 10);
+  }
+  return {
+    data: {
+      id: id,
+      type: p_type,
+      attributes: p_attributes,
+    }
+  }
+};
+
+/**
+ * wrap
+ *
+ * @ignore
+ */
+function wrap(p_json) {
+  if (isArray(p_json)) {
+    return p_json;
+  }
+  return [p_json];
+}
+if (process.env.NODE_ENV === "test") {
+   exports.wrap = wrap;
+}
+
+/**
+ * extractRelationships
+ *
+ * @ignore
+ */
+function extractRelationships(relationships, { camelizeKeys }) {
+  const ret = {};
+  keys(relationships).forEach((key) => {
+    const relationship = relationships[key];
+    const name = camelizeKeys ? camelCase(key) : key;
+    ret[name] = {};
+    if (typeof relationship.data !== 'undefined') {
+      if (isArray(relationship.data)) {
+        ret[name].data = relationship.data.map(e => ({
+          id: e.id,
+          type: camelizeKeys ? camelCase(e.type) : e.type,
+        }));
+      } else if (!isNull(relationship.data)) {
+        ret[name].data = {
+          id: relationship.data.id,
+          type: camelizeKeys ? camelCase(relationship.data.type) : relationship.data.type,
+        };
+      } else {
+        ret[name].data = relationship.data;
+      }
+    } else {
+      if (isArray(relationship)) {
+        ret[name].data = relationship.map(e => ({
+          id: e.data.id,
+          type: camelizeKeys ? camelCase(e.type) : e.data.type,
+        }));
+      }
+    }
+    if (relationship.links) {
+      ret[name].links = relationship.links;
+    }
+  });
+  return ret;
+}
+
+/**
+ * extractErrors
+ *
+ * @ignore
+ */
+function extractErrors(p_json, p_opts = { camelizeKeys: true }) {
+  let ret = [];
+  if (Array.isArray(p_json)) {
+    p_json.forEach((elem) => {
+      elem['isFlash'] = true;
+      if (elem.meta &amp;&amp; elem.meta.field) {
+        elem['isFlash'] = false;
+      }
+      ret.push(elem);
+    });
+  }
+  return ret;
+}
+if (process.env.NODE_ENV === "test") {
+   exports.extractErrors = extractErrors;
+}
+
+/**
+ * extractEntities
+ *
+ * @ignore
+ */
+function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
+  let myLogger = log.getLogger('freejsonapi.jsonApiNormalizer');
+  myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.start');
+  const ret = origin;
+  wrap(json).forEach((elem) => {
+    if (!elem.errors) {
+      const type = camelizeKeys ? camelCase(elem.type) : elem.type;
+      if (mainElement) {
+        ret.MAINELEM = type;
+      } else {
+        if (!ret.OTHERELEMENTS) {
+          ret.OTHERELEMENTS = [];
+        }
+        if (ret.OTHERELEMENTS.indexOf(type) === -1) {
+          ret.OTHERELEMENTS.push(type);
+        }
+      }
+      ret[type] = ret[type] || {};
+      ret[type][elem.id] = ret[type][elem.id] || {
+        id: elem.id,
+      };
+      myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.type.' + (type || '~') + '.' + (elem.id || '~'));
+      if (camelizeKeys) {
+        ret[type][elem.id].attributes = {};
+        keys(elem.attributes).forEach(key => {
+          ret[type][elem.id].attributes[camelCase(key)] = elem.attributes[key];
+        });
+      } else {
+        ret[type][elem.id].attributes = elem.attributes;
+      }
+      if (elem.links) {
+        ret[type][elem.id].links = {};
+        keys(elem.links).forEach((key) => {
+          ret[type][elem.id].links[key] = elem.links[key];
+        });
+      }
+      if (elem.relationships) {
+        ret[type][elem.id].relationships = extractRelationships(elem.relationships, { camelizeKeys });
+      }
+      if (mainElement) {
+        ret['SORTEDELEMS'] = ret['SORTEDELEMS'] || [];
+        ret['SORTEDELEMS'].push(elem.id);
+      }
+    }
+  });
+  ret.length = 0;
+  if (ret.SORTEDELEMS) {
+    ret.length = ret.SORTEDELEMS.length;
+  }
+  myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.end');
+  return ret;
+}
+
+/**
+ * doFilterEndpoint
+ *
+ * @ignore
+ */
+function doFilterEndpoint(endpoint) {
+  return endpoint.replace(/\?.*$/, '');
+}
+
+/**
+ * extractMetaData
+ *
+ * @ignore
+ */
+function extractMetaData(json, endpoint, { camelizeKeys, filterEndpoint }) {
+  const ret = {};
+  ret.meta = {};
+  let metaObject;
+  if (!filterEndpoint) {
+    const filteredEndpoint = doFilterEndpoint(endpoint);
+    ret.meta[filteredEndpoint] = {};
+    ret.meta[filteredEndpoint][endpoint.slice(filteredEndpoint.length)] = {};
+    metaObject = ret.meta[filteredEndpoint][endpoint.slice(filteredEndpoint.length)];
+  } else {
+    ret.meta[endpoint] = {};
+    metaObject = ret.meta[endpoint];
+  }
+  metaObject.data = {};
+  if (json.data) {
+    const meta = [];
+    wrap(json.data).forEach((object) => {
+      const pObject = { id: object.id, type: camelizeKeys ? camelCase(object.type) : object.type };
+      if (object.relationships) {
+        pObject.relationships = extractRelationships(object.relationships, { camelizeKeys });
+      }
+      meta.push(pObject);
+    });
+    metaObject.data = meta;
+    if (json.links) {
+      metaObject.links = json.links;
+      ret.meta[doFilterEndpoint(endpoint)].links = json.links;
+    }
+    if (json.meta) {
+      metaObject.meta = json.meta;
+    }
+  }
+  return ret;
+}
+
+/**
+ * getFieldErrorMessage
+ */
+export function getFieldErrorMessage(errors, fieldName, messdef = '') {
+  let ret = messdef;
+  if (errors &amp;&amp; errors.errors) {
+    errors.errors.forEach((elem) => {
+      if (elem.source &amp;&amp; elem.source.pointer) {
+        if (elem.source.pointer.indexOf(`/${fieldName}`) >= 0) {
+          switch (elem.code) {
+            case 10300000: {
+              ret = 'Erreur générale';
+              break;
+            }
+            case 10300001: {
+              ret = "Erreur d'api";
+              break;
+            }
+            case 10300002: {
+              ret = 'Mot de passe incorrect';
+              break;
+            }
+            case 10300003: {
+              ret = "L'utilisateur a été désactivé";
+              break;
+            }
+            case 10300004: {
+              ret = "Le login n'a pas été trouvé";
+              break;
+            }
+            case 10300005: {
+              ret = 'Les mots de passe sont différents';
+              break;
+            }
+            case 10300006: {
+              ret = 'Le login existe déjà';
+              break;
+            }
+            case 10300007: {
+              ret = "La file d'attente n'est pas accessible";
+              break;
+            }
+            case 10300008: {
+              ret = 'Le login est obligatoire';
+              break;
+            }
+            case 10300009: {
+              ret = 'Le mot de passe est obligatoire';
+              break;
+            }
+            case 10300010: {
+              ret = 'Il manque un paramètre';
+              break;
+            }
+            case 10300011: {
+              ret = 'Erreur de création';
+              break;
+            }
+            case 10300012: {
+              ret = 'Non trouvé';
+              break;
+            }
+            case 10300013: {
+              ret = 'Exietd déjà';
+              break;
+            }
+            case 10300014: {
+              ret = 'Exietd de modification';
+              break;
+            }
+            case 10300015: {
+              ret = 'Le jeton est obligatoire';
+              break;
+            }
+            case 10300016: {
+              ret = "Le jeton n'a pas été trouvé";
+              break;
+            }
+            case 10300017: {
+              ret = "L'utilisateur n'a pas été activé";
+              break;
+            }
+            case 666001: {
+              ret = 'Le champ est obligatoire !';
+              break;
+            }
+            default: {
+              if (elem.title) {
+                ret = elem.title;
+              } else {
+                ret = messdef;
+              }
+              break;
+            }
+          }
+        }
+        return true;
+      }
+      return null;
+    });
+  }
+  return ret;
+}
+
+/**
+ * jsonApiUpdate
+ */
+export function jsonApiUpdate(json, key, value, ignoreAdd = true) {
+  if (!json || !value) {
+    return json;
+  }
+  if (value[key] &amp;&amp; json[key]) {
+    if (value.MAINELEM === key) {
+      const ids = json.SORTEDELEMS;
+      keys(value[key]).forEach((elem) => {
+        if (ids.indexOf(elem) >= 0) {
+          json[key][elem] = { ...json[key][elem], ...value[key][elem] };
+          if (json.SORTEDELEMS.indexOf(elem) &lt; 0 &amp;&amp; elem !== '0' &amp;&amp; elem !== 0) {
+            json.SORTEDELEMS.push(elem);
+          }
+          if (json.OTHERELEMENTS) {
+            json.OTHERELEMENTS.forEach((type) => {
+              if (value[type]) {
+                json[type] = { ...json[type], ...value[type] };
+              }
+            });
+          }
+        } else if (!ignoreAdd) {
+          json[key] = { ...json[key], ...value[key] };
+          if (elem !== '0' &amp;&amp; elem !== 0) {
+            json.SORTEDELEMS.push(elem);
+          }
+          if (json.OTHERELEMENTS) {
+            json.OTHERELEMENTS.forEach((type) => {
+              if (value[type]) {
+                json[type] = { ...json[type], ...value[type] };
+              }
+            });
+          }
+        }
+      });
+    } else {
+      keys(value[key]).forEach((elemNew) => {
+        const found = keys(json[key]).findIndex((jsonId) => {
+          return jsonId === value[key][elemNew].id
+        });
+        if (found >= 0) {
+          json[key][found] = value[key][elemNew];
+        }
+      });
+    }
+  }
+  return json;
+}
+
+/**
+ * jsonApiRemove
+ */
+export function jsonApiRemove(json, key, value) {
+  if (!json || !value) {
+    return json;
+  }
+  if (value[key] &amp;&amp; json[key]) {
+    if (value.MAINELEM === key) {
+      const ids = json.SORTEDELEMS;
+      Object.keys(value[key]).forEach((elem) => {
+        const idFind = ids.indexOf(elem)
+        if (idFind >= 0) {
+          json.SORTEDELEMS.splice(idFind,1);
+          if (json[key][elem]) {
+            delete json[key][elem];
+          }
+        }
+      });
+    }
+  }
+  return json;
+}
+
+/**
+ * jsonApiNormalizer : Converti un résultat au format jsonApi en résultat "normalisé00
+ *
+ * @param {Object} json    Object à ajouter aux résultats existants (origin)
+ * @param {Object} origin  Résultats déjà présents, à compléter, format normalisé
+ * @param {Object} opts    Options
+ * @param {string} opts.endpoint
+ * @param {bool} opts.filterEndpoint
+ * @param {bool} opts.camelizeKeys
+ *
+ * @return {Object}
+ */
+export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
+  let myLogger = log.getLogger('freejsonapi.jsonApiNormalizer');
+  myLogger.info('freejsonapi.jsonApiNormalizer.start');
+  if (json === null) {
+    myLogger.info('freejsonapi.jsonApiNormalizer.end.empty.json');
+    return origin;
+  }
+  const { endpoint } = opts;
+  let { filterEndpoint, camelizeKeys } = opts;
+  if (typeof filterEndpoint === 'undefined') {
+    filterEndpoint = true;
+  }
+  if (typeof camelizeKeys === 'undefined') {
+    camelizeKeys = false;
+  }
+  if (json.data) {
+    myLogger.debug('freejsonapi.jsonApiNormalizer.data');
+    const elems = extractEntities(json.data, { camelizeKeys }, origin, true);
+    merge(origin, elems);
+    if (json.data.errors) {
+      origin.errors = extractErrors(json.data.errors, { camelizeKeys });
+    }
+  }
+  if (json.errors) {
+    myLogger.debug('freejsonapi.jsonApiNormalizer.errors');
+    origin.errors = extractErrors(json.errors, { camelizeKeys });
+  }
+  if (json.included) {
+    myLogger.debug('freejsonapi.jsonApiNormalizer.included');
+    merge(origin, extractEntities(json.included, { camelizeKeys }, origin, false));
+  }
+  if (endpoint) {
+    const endpointKey = filterEndpoint ? doFilterEndpoint(endpoint) : endpoint;
+    merge(origin, extractMetaData(json, endpointKey, { camelizeKeys, filterEndpoint }));
+  }
+  if (origin.SORTEDELEMS &amp;&amp; origin.SORTEDELEMS.length > 0) {
+    const uniqueSet = new Set(origin.SORTEDELEMS);
+    origin.SORTEDELEMS = [...uniqueSet];
+  }
+  myLogger.info('freejsonapi.jsonApiNormalizer.end');
+  return origin;
+}
+
+/**
+ * @ignore
+ */
+function getJsonApiAttributes(obj) {
+  let ret = {};
+  if (obj) {
+    const keys = Object.getOwnPropertyNames(obj);
+    keys.forEach((key) => {
+      if (key.substring(0, 1) !== '_' &amp;&amp; key !== 'id' &amp;&amp; key !== 'type') {
+        if (!Array.isArray(obj[key])) {
+          if (!obj[key] || (!obj[key].id &amp;&amp; !obj[key].type)) {
+            if (!obj[key] || !obj[key].id || (obj[key].id &amp;&amp; obj[key].id !== '0')) {
+              const value = obj[key];
+              ret = { ...ret, [key]: value };
+            }
+          }
+        }
+      }
+    });
+  }
+  return ret;
+}
+
+/**
+ * @ignore
+ */
+function getJsonApiRelationships(obj, debug = false) {
+  let rels = {};
+  if (obj) {
+    const keys = Object.getOwnPropertyNames(obj);
+    keys.forEach((key) => {
+      if (key.substring(0, 1) !== '_') {
+        if (Array.isArray(obj[key])) {
+          rels[key] = { data: [] };
+          obj[key].forEach((elem) => {
+            rels[key].data.push({
+              id: elem.id,
+              type: elem.type,
+            });
+          });
+        } else if (obj[key] &amp;&amp; obj[key].id &amp;&amp; obj[key].id !== '0' &amp;&amp; obj[key].type) {
+          rels[key] = {
+            data: {
+              id: obj[key].id,
+              type: obj[key].type,
+            },
+          };
+        }
+      }
+    });
+  }
+  return rels;
+}
+
+/**
+ * @ignore
+ */
+function getJsonApiIncluded(obj, debug = false) {
+  let included = [];
+  if (obj) {
+    const keys = Object.getOwnPropertyNames(obj);
+    keys.forEach((key) => {
+      if (key.substring(0, 1) !== '_') {
+        if (Array.isArray(obj[key])) {
+          obj[key].forEach((elem) => {
+            const obj2 = getJsonApi(elem, elem.type, debug);
+            if (obj2.included) {
+              included = included.concat(obj2.included);
+              delete obj2.included;
+            }
+            if (obj2.data) {
+              included.push(obj2.data);
+            }
+          });
+        } else if (obj[key] &amp;&amp; obj[key].id &amp;&amp; obj[key].id !== '0' &amp;&amp; obj[key].type) {
+          const obj3 = getJsonApi(obj[key], obj[key].type, debug);
+          if (obj3.included) {
+            included = included.concat(obj3.included);
+            delete obj3.included;
+          }
+          if (obj3.data) {
+            included.push(obj3.data);
+          }
+        }
+      }
+    });
+  }
+  return included;
+}
+
+/**
+ * getJsonApi : Converti un modèle en object JsonApi
+ *
+ * @param {Object} obj   Le modèle
+ * @param {string} type  Le type
+ *
+ * @return {Object}
+ */
+export function getJsonApi(obj, type = null) {
+  const attributes = getJsonApiAttributes(obj);
+  const relations = getJsonApiRelationships(obj);
+  const included = getJsonApiIncluded(obj);
+  let myType = type;
+  let id     = null;
+  if (obj) {
+    if (myType === null &amp;&amp; obj.type) {
+      myType = obj.type;
+    }
+    id = obj.id || '0';
+    if (id === '0') {
+      id = null;
+    }
+    if (id &amp;&amp; !isNaN(id)) {
+      id = parseInt(id, 10);
+    }
+  }
+  let jsonApi = {
+    data: {
+      type: myType,
+      id: id,
+      attributes: attributes,
+    },
+  };
+  if (Object.keys(relations).length > 0) {
+    jsonApi.data['relationships'] = relations;
+  }
+  if (Array.isArray(included) &amp;&amp; included.length > 0) {
+    const newIncluded = included.filter((v, i, a) => i === a.findIndex(elem => elem.type === v.type &amp;&amp; elem.id === v.id));
+    jsonApi.included = newIncluded;
+  }
+  return jsonApi;
+}
+
+/**
+ *
+ */
+export function addRelationships(name, type, obj) {
+  let jsonApiRelationships = getJsonApi(obj, type, 0);
+  let jsonApi = {};
+  jsonApi[name] = { ...jsonApiRelationships };
+  return jsonApi;
+}
+
+/**
+ *
+ */
+export function getJsonApiWithRelationships(name, id_field, attributes, relationships) {
+  const jsonApi = {
+    data: {
+      id: id_field,
+      type: name,
+      attributes: { ...attributes },
+      relationships: { ...relationships },
+    },
+  };
+  return jsonApi;
+}
+
+/**
+ *
+ */
+export function getFieldError(errors, field) {
+  let error = false;
+  errors.forEach((val, i) => {
+    if (val.source &amp;&amp; val.source.parameter &amp;&amp; val.source.parameter === field) {
+      error = {
+        code: val.code,
+        label: val.title,
+      };
+      return true;
+    }
+    return false;
+  });
+  return error;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addRelationships">addRelationships</a></li><li><a href="global.html#buildFirstModel">buildFirstModel</a></li><li><a href="global.html#buildModel">buildModel</a></li><li><a href="global.html#getFieldError">getFieldError</a></li><li><a href="global.html#getFieldErrorMessage">getFieldErrorMessage</a></li><li><a href="global.html#getJsonApi">getJsonApi</a></li><li><a href="global.html#getJsonApiWithRelationships">getJsonApiWithRelationships</a></li><li><a href="global.html#getNewJsonApi">getNewJsonApi</a></li><li><a href="global.html#getNewModel">getNewModel</a></li><li><a href="global.html#getNewNormalizedObject">getNewNormalizedObject</a></li><li><a href="global.html#jsonApiNormalizer">jsonApiNormalizer</a></li><li><a href="global.html#jsonApiRemove">jsonApiRemove</a></li><li><a href="global.html#jsonApiUpdate">jsonApiUpdate</a></li><li><a href="global.html#objectToQueryString">objectToQueryString</a></li><li><a href="global.html#queryStringToObject">queryStringToObject</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Wed Jul 15 2020 10:14:03 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
