@@ -11,7 +11,7 @@ const config = {
   external: ['lodash, loglevel'],
   output: {
     format: 'umd',
-    name: 'freejsonapi',
+    name: 'jsonapi-front',
   },
 
   plugins: [

@@ -14,12 +14,12 @@ import log from 'loglevel';
  * @return {Object}                Nouvel objet normalisé
  */
 export function getNewNormalizedObject(p_type = "", p_id = "") {
-  const myLogger = log.getLogger('freejsonapi.getNewNormalizedObject');
-  myLogger.info('freejsonapi.getNewNormalizedObject.start');
+  const myLogger = log.getLogger('jsonapi-front.getNewNormalizedObject');
+  myLogger.info('jsonapi-front.getNewNormalizedObject.start');
   let json = {};
   if (p_type === "") {
-    myLogger.error("freejsonapi.getNewNormalizedObject : Type le l'objet non renseigné ");
-    myLogger.info('freejsonapi.getNewNormalizedObject.end');
+    myLogger.error("jsonapi-front.getNewNormalizedObject : Type le l'objet non renseigné ");
+    myLogger.info('jsonapi-front.getNewNormalizedObject.end');
     return json;
   }
   json[p_type] = {};
@@ -37,7 +37,7 @@ export function getNewNormalizedObject(p_type = "", p_id = "") {
     json.length = 1;
   }
   myLogger.debug(json);
-  myLogger.info('freejsonapi.getNewNormalizedObject.end');
+  myLogger.info('jsonapi-front.getNewNormalizedObject.end');
   return json;
 };
 
@@ -124,8 +124,8 @@ if (process.env.NODE_ENV === "test") {
  * @ignore
  */
 function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
-  let myLogger = log.getLogger('freejsonapi.jsonApiNormalizer');
-  myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.start');
+  let myLogger = log.getLogger('jsonapi-front.jsonApiNormalizer');
+  myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.start');
   const ret = origin;
   wrap(json).forEach((elem) => {
     if (!elem.errors) {
@@ -144,7 +144,7 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
       ret[type][elem.id] = ret[type][elem.id] || {
         id: elem.id,
       };
-      myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.type.' + (type || '~') + '.' + (elem.id || '~'));
+      myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.type.' + (type || '~') + '.' + (elem.id || '~'));
       if (camelizeKeys) {
         ret[type][elem.id].attributes = {};
         keys(elem.attributes).forEach(key => {
@@ -172,7 +172,7 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
   if (ret.SORTEDELEMS) {
     ret.length = ret.SORTEDELEMS.length;
   }
-  myLogger.debug('freejsonapi.jsonApiNormalizer.extractEntities.end');
+  myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.end');
   return ret;
 }
 
@@ -340,10 +340,10 @@ export function normalizedObjectRemove(json, key, value) {
  * @return {Object}
  */
 export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
-  let myLogger = log.getLogger('freejsonapi.jsonApiNormalizer');
-  myLogger.info('freejsonapi.jsonApiNormalizer.start');
+  let myLogger = log.getLogger('jsonapi-front.jsonApiNormalizer');
+  myLogger.info('jsonapi-front.jsonApiNormalizer.start');
   if (json === null) {
-    myLogger.info('freejsonapi.jsonApiNormalizer.end.empty.json');
+    myLogger.info('jsonapi-front.jsonApiNormalizer.end.empty.json');
     return origin;
   }
   const { endpoint } = opts;
@@ -355,7 +355,7 @@ export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
     camelizeKeys = false;
   }
   if (json.data) {
-    myLogger.debug('freejsonapi.jsonApiNormalizer.data');
+    myLogger.debug('jsonapi-front.jsonApiNormalizer.data');
     const elems = extractEntities(json.data, { camelizeKeys }, origin, true);
     merge(origin, elems);
     if (json.data.errors) {
@@ -363,11 +363,11 @@ export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
     }
   }
   if (json.errors) {
-    myLogger.debug('freejsonapi.jsonApiNormalizer.errors');
+    myLogger.debug('jsonapi-front.jsonApiNormalizer.errors');
     origin.errors = extractErrors(json.errors, { camelizeKeys });
   }
   if (json.included) {
-    myLogger.debug('freejsonapi.jsonApiNormalizer.included');
+    myLogger.debug('jsonapi-front.jsonApiNormalizer.included');
     merge(origin, extractEntities(json.included, { camelizeKeys }, origin, false));
   }
   if (endpoint) {
@@ -378,6 +378,6 @@ export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
     const uniqueSet = new Set(origin.SORTEDELEMS);
     origin.SORTEDELEMS = [...uniqueSet];
   }
-  myLogger.info('freejsonapi.jsonApiNormalizer.end');
+  myLogger.info('jsonapi-front.jsonApiNormalizer.end');
   return origin;
 }

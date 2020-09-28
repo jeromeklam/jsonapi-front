@@ -1,26 +1,26 @@
 {
-  "name": "jsonapi-tools",
+  "name": "jsonapi-front",
   "version": "1.1.0",
-  "description": "JsonApi Tools",
+  "description": "ES6 JsonApi Tools",
   "keywords": [
     "jsonapi"
   ],
   "license": "MIT",
   "author": "Jérôme KLAM",
-  "homepage": "http://github.com/jeromeklam/jsonapi-tools.git",
+  "homepage": "http://github.com/jeromeklam/jsonapi-front.git",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jeromeklam/jsonapi-tools.git"
+    "url": "http://github.com/jeromeklam/jsonapi-front.git"
   },
   "bugs": {
     "mail": "jeromeklam@free.fr",
-    "url": "http://github.com/jeromeklam/jsonapi-tools/issues"
+    "url": "http://github.com/jeromeklam/jsonapi-front/issues"
   },
-  "main": "dist/jsonapi-tools.js",
+  "main": "dist/jsonapi-front.js",
   "scripts": {
     "clean": "rimraf ./coverage ./dist",
-    "dev": "cross-env NODE_ENV=development rollup -c -o dist/jsonapi-tools.js",
-    "build": "cross-env NODE_ENV=production rollup -c -o dist/jsonapi-tools.js",
+    "dev": "cross-env NODE_ENV=development rollup -c -o dist/jsonapi-front.js",
+    "build": "cross-env NODE_ENV=production rollup -c -o dist/jsonapi-front.js",
     "test": "cross-env NODE_ENV=test jest",
     "doc:jsdoc": "cross-env NODE_ENV=development jsdoc -c jsdoc.json -d doc",
     "doc:mddoc": "cross-env NODE_ENV=development jsdoc2md --configure jsdoc2md.json --files src/*.js > doc/api.md",

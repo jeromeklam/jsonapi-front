@@ -10,8 +10,8 @@ import log from 'loglevel';
  * @return {Object} | {String}
  */
 export function queryStringToObject(queryString = '', first = true) {
-  const myLogger = log.getLogger('freejsonapi.queryStringToObject');
-  myLogger.info('freejsonapi.queryStringToObject.start');
+  const myLogger = log.getLogger('jsonapi-front.queryStringToObject');
+  myLogger.info('jsonapi-front.queryStringToObject.start');
   let params = {};
   if (queryString) {
     let hashes = [];
@@ -22,10 +22,10 @@ export function queryStringToObject(queryString = '', first = true) {
         hashes = queryString.split('&');
       } else {
         if (!first) {
-          myLogger.info('freejsonapi.queryStringToObject.end');
+          myLogger.info('jsonapi-front.queryStringToObject.end');
           return decodeURIComponent(queryString)
         }
-        myLogger.info('freejsonapi.queryStringToObject.end');
+        myLogger.info('jsonapi-front.queryStringToObject.end');
         return {};
       }
     }
@@ -52,7 +52,7 @@ export function queryStringToObject(queryString = '', first = true) {
       }
     });
   }
-  myLogger.info('freejsonapi.queryStringToObject.end');
+  myLogger.info('jsonapi-front.queryStringToObject.end');
   return params;
 }
 
@@ -69,8 +69,8 @@ export function queryStringToObject(queryString = '', first = true) {
  * @return {string}
  */
 export function objectToQueryString(queryObj, options = {emptyBrackets: true}, nesting_start = '', level = 0) {
-  const myLogger = log.getLogger('freejsonapi.objectToQueryString');
-  myLogger.info('freejsonapi.objectToQueryString.start');
+  const myLogger = log.getLogger('jsonapi-front.objectToQueryString');
+  myLogger.info('jsonapi-front.objectToQueryString.start');
   if (queryObj) {
     let l_nesting_start = nesting_start;
     let l_nesting_end = "";
@@ -80,7 +80,7 @@ export function objectToQueryString(queryObj, options = {emptyBrackets: true}, n
     }
     const pairs = Object.entries(queryObj).map(([key, val]) => {
       if (val !== null && typeof val === "object") {
-        myLogger.info('freejsonapi.objectToQueryString.end');
+        myLogger.info('jsonapi-front.objectToQueryString.end');
         return objectToQueryString(val, options, l_nesting_start + `${key}` + l_nesting_end, level+1);
       } else {
         const numKey = (options && options.numericKeys && options.numericKeys === true) ? true : false;
@@ -90,10 +90,10 @@ export function objectToQueryString(queryObj, options = {emptyBrackets: true}, n
           param = nesting_start;
         }
         if (val !== null) {
-          myLogger.info('freejsonapi.objectToQueryString.end');
+          myLogger.info('jsonapi-front.objectToQueryString.end');
           return [param, val].join("=");
         } else {
-          myLogger.info('freejsonapi.objectToQueryString.end');
+          myLogger.info('jsonapi-front.objectToQueryString.end');
           return [param, ''].join("=");
         }
       }
@@ -102,9 +102,9 @@ export function objectToQueryString(queryObj, options = {emptyBrackets: true}, n
     if (level === 0 && queryString !== '') {
       queryString = '?' + queryString;
     }
-    myLogger.info('freejsonapi.objectToQueryString.end');
+    myLogger.info('jsonapi-front.objectToQueryString.end');
     return queryString;
   }
-  myLogger.info('freejsonapi.objectToQueryString.end');
+  myLogger.info('jsonapi-front.objectToQueryString.end');
   return '';
 }
