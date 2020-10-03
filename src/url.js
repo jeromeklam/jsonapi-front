@@ -90,6 +90,13 @@ export function objectToQueryString(queryObj, options = {emptyBrackets: true}, n
           param = nesting_start;
         }
         if (val !== null) {
+          if (val === true) {
+            val = 1;
+          } else {
+            if (val === false) {
+              val = 0;
+            }
+          }
           myLogger.info('jsonapi-front.objectToQueryString.end');
           return [param, val].join("=");
         } else {

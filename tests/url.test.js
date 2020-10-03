@@ -51,6 +51,11 @@ test('objectToQueryString : Verify {param1: 45}', () => {
   expect(result).toEqual('?param1=45');
 });
 
+test('objectToQueryString : Verify {param1: true}', () => {
+  const result = objectToQueryString({param1: true});
+  expect(result).toEqual('?param1=1');
+});
+
 test('objectToQueryString : Verify {param1: 45, param2: test}', () => {
   const result = objectToQueryString({param1: '45', param2: 'test'});
   expect(result).toEqual('?param1=45&param2=test');
