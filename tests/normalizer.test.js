@@ -71,6 +71,10 @@ test('normalizedObjectUpdate : Verify items without object', () => {
  const result = normalizedObjectUpdate({MAINELEM: "Free_Test", OTHERELEMENTS: [], Free_Test: {}}, 'Free_Test', {});
  expect(result).toEqual({MAINELEM: "Free_Test", OTHERELEMENTS: [], Free_Test: {}});
 });
+test('normalizedObjectUpdate : Verify items with other object', () => {
+ const result = normalizedObjectUpdate({MAINELEM: "Free_Test", OTHERELEMENTS: ['Free_Other'], Free_Test: {}, Free_Other: {"66": {attributes: {name: "old"}, id: "66"}}}, 'Free_Test', {MAINELEM: 'Free_Other', Free_Other: {"66": {attributes: {name: "label"}, id: "66"}}});
+ expect(result).toEqual( {"Free_Other": {"0": {"attributes": {"name": "label"}, "id": "66"}, "66": {"attributes": {"name": "label"}, "id": "66"}}, "Free_Test": {}, "MAINELEM": "Free_Test", "OTHERELEMENTS": ["Free_Other"]});
+});
 
 
 /**

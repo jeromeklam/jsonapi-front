@@ -292,6 +292,25 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
       });
     }
     json.length = json.SORTEDELEMS.length;
+  } else {
+    if (json[value.MAINELEM]) {
+      keys(value[value.MAINELEM]).forEach((elemNew) => {
+        const found = keys(json[value.MAINELEM]).findIndex((jsonId) => {
+          return jsonId === elemNew;
+        });
+        if (found >= 0) {
+          json[value.MAINELEM][found] = { ...value[value.MAINELEM][elemNew] };
+          if (json.OTHERELEMENTS) {
+            json.OTHERELEMENTS.forEach((type) => {
+              if (value[type]) {
+                json[type] = { ...json[type], ...value[type] };
+              }
+            });
+          }
+          return true;
+        }
+      });
+    }
   }
   return json;
 }
