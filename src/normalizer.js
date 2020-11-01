@@ -283,7 +283,7 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
           if (json.OTHERELEMENTS) {
             json.OTHERELEMENTS.forEach((type) => {
               if (value[type]) {
-                json[type] = { ...json[type], ...value[type] };
+                json[type] = { ...json[type] };
               }
             });
           }
@@ -299,11 +299,11 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
           return jsonId === elemNew;
         });
         if (found >= 0) {
-          json[value.MAINELEM][found] = { ...value[value.MAINELEM][elemNew] };
+          json[value.MAINELEM][elemNew] = { ...value[value.MAINELEM][elemNew] };
           if (json.OTHERELEMENTS) {
             json.OTHERELEMENTS.forEach((type) => {
               if (value[type]) {
-                json[type] = { ...json[type], ...value[type] };
+                json[type] = { ...json[type] };
               }
             });
           }
@@ -312,7 +312,7 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
       });
     }
   }
-  return json;
+  return { ...json};
 }
 
  /**
@@ -343,7 +343,7 @@ export function normalizedObjectRemove(json, key, value) {
     }
     json.length = json.SORTEDELEMS.length;
   }
-  return json;
+  return { ...json };
 }
 
 /**
