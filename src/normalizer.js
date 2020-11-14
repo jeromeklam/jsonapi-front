@@ -13,11 +13,11 @@ import log from 'loglevel';
  *
  * @return {Object}                Nouvel objet normalisé
  */
-export function getNewNormalizedObject(p_type = "", p_id = "") {
+export function getNewNormalizedObject(p_type = '', p_id = '') {
   const myLogger = log.getLogger('jsonapi-front.getNewNormalizedObject');
   myLogger.info('jsonapi-front.getNewNormalizedObject.start');
   let json = {};
-  if (p_type === "") {
+  if (p_type === '') {
     myLogger.error("jsonapi-front.getNewNormalizedObject : Type le l'objet non renseigné ");
     myLogger.info('jsonapi-front.getNewNormalizedObject.end');
     return json;
@@ -32,28 +32,28 @@ export function getNewNormalizedObject(p_type = "", p_id = "") {
     json.SORTEDELEMS.push(id);
     json[p_type][id] = {
       id: id,
-      attributes: {}
+      attributes: {},
     };
     json.length = 1;
   }
   myLogger.debug(json);
   myLogger.info('jsonapi-front.getNewNormalizedObject.end');
   return json;
-};
+}
 
 /**
  * wrap
  *
  * @ignore
  */
-function wrap(p_json) {
-  if (isArray(p_json)) {
-    return p_json;
+function wrap(pJson) {
+  if (isArray(pJson)) {
+    return pJson;
   }
-  return [p_json];
+  return [pJson];
 }
-if (process.env.NODE_ENV === "test") {
-   exports.wrap = wrap;
+if (process.env.NODE_ENV === 'test') {
+  exports.wrap = wrap;
 }
 
 /**
@@ -81,13 +81,11 @@ function extractRelationships(relationships, { camelizeKeys }) {
       } else {
         ret[name].data = relationship.data;
       }
-    } else {
-      if (isArray(relationship)) {
-        ret[name].data = relationship.map(e => ({
-          id: e.data.id,
-          type: camelizeKeys ? camelCase(e.type) : e.data.type,
-        }));
-      }
+    } else if (isArray(relationship)) {
+      ret[name].data = relationship.map(e => ({
+        id: e.data.id,
+        type: camelizeKeys ? camelCase(e.type) : e.data.type,
+      }));
     }
     if (relationship.links) {
       ret[name].links = relationship.links;
@@ -104,7 +102,7 @@ function extractRelationships(relationships, { camelizeKeys }) {
 function extractErrors(p_json, p_opts = { camelizeKeys: true }) {
   let ret = [];
   if (Array.isArray(p_json)) {
-    p_json.forEach((elem) => {
+    p_json.forEach(elem => {
       elem['isFlash'] = true;
       if (elem.meta && elem.meta.field) {
         elem['isFlash'] = false;
@@ -114,8 +112,8 @@ function extractErrors(p_json, p_opts = { camelizeKeys: true }) {
   }
   return ret;
 }
-if (process.env.NODE_ENV === "test") {
-   exports.extractErrors = extractErrors;
+if (process.env.NODE_ENV === 'test') {
+  exports.extractErrors = extractErrors;
 }
 
 /**
@@ -127,7 +125,8 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
   let myLogger = log.getLogger('jsonapi-front.jsonApiNormalizer');
   myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.start');
   const ret = origin;
-  wrap(json).forEach((elem) => {
+  wrap(json).forEach(elem => {
+    const locId = `${elem.id}`;
     if (!elem.errors) {
       const type = camelizeKeys ? camelCase(elem.type) : elem.type;
       if (mainElement) {
@@ -141,30 +140,30 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
         }
       }
       ret[type] = ret[type] || {};
-      ret[type][elem.id] = ret[type][elem.id] || {
-        id: elem.id,
+      ret[type][locId] = ret[type][locId] || {
+        id: locId,
       };
-      myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.type.' + (type || '~') + '.' + (elem.id || '~'));
+      myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.type.' + (type || '~') + '.' + (locId || '~'));
       if (camelizeKeys) {
-        ret[type][elem.id].attributes = {};
+        ret[type][locId].attributes = {};
         keys(elem.attributes).forEach(key => {
-          ret[type][elem.id].attributes[camelCase(key)] = elem.attributes[key];
+          ret[type][locId].attributes[camelCase(key)] = elem.attributes[key];
         });
       } else {
-        ret[type][elem.id].attributes = elem.attributes;
+        ret[type][locId].attributes = elem.attributes;
       }
       if (elem.links) {
-        ret[type][elem.id].links = {};
-        keys(elem.links).forEach((key) => {
-          ret[type][elem.id].links[key] = elem.links[key];
+        ret[type][locId].links = {};
+        keys(elem.links).forEach(key => {
+          ret[type][locId].links[key] = elem.links[key];
         });
       }
       if (elem.relationships) {
-        ret[type][elem.id].relationships = extractRelationships(elem.relationships, { camelizeKeys });
+        ret[type][locId].relationships = extractRelationships(elem.relationships, { camelizeKeys });
       }
       if (mainElement) {
         ret['SORTEDELEMS'] = ret['SORTEDELEMS'] || [];
-        ret['SORTEDELEMS'].push(elem.id);
+        ret['SORTEDELEMS'].push(locId);
       }
     }
   });
@@ -206,7 +205,7 @@ function extractMetaData(json, endpoint, { camelizeKeys, filterEndpoint }) {
   metaObject.data = {};
   if (json.data) {
     const meta = [];
-    wrap(json.data).forEach((object) => {
+    wrap(json.data).forEach(object => {
       const pObject = { id: object.id, type: camelizeKeys ? camelCase(object.type) : object.type };
       if (object.relationships) {
         pObject.relationships = extractRelationships(object.relationships, { camelizeKeys });
@@ -257,19 +256,17 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
               }
             });
           }
-        } else {
-          if (!ignoreAdd) {
-            json[key] = { ...json[key], ...value[key] };
-            if (elem !== '0' && elem !== 0) {
-              json.SORTEDELEMS.push(elem);
-            }
-            if (json.OTHERELEMENTS) {
-              json.OTHERELEMENTS.forEach((type) => {
-                if (value[type]) {
-                  json[type] = { ...json[type], ...value[type] };
-                }
-              });
-            }
+        } else if (!ignoreAdd) {
+          json[key] = { ...json[key], ...value[key] };
+          if (elem !== '0' && elem !== 0) {
+            json.SORTEDELEMS.push(elem);
+          }
+          if (json.OTHERELEMENTS) {
+            json.OTHERELEMENTS.forEach((type) => {
+              if (value[type]) {
+                json[type] = { ...json[type], ...value[type] };
+              }
+            });
           }
         }
       });
@@ -283,7 +280,7 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
           if (json.OTHERELEMENTS) {
             json.OTHERELEMENTS.forEach((type) => {
               if (value[type]) {
-                json[type] = { ...json[type] };
+                json[type] = { ...json[type], ...value[type] };
               }
             });
           }
@@ -292,38 +289,36 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
       });
     }
     json.length = json.SORTEDELEMS.length;
-  } else {
-    if (json[value.MAINELEM]) {
-      keys(value[value.MAINELEM]).forEach((elemNew) => {
-        const found = keys(json[value.MAINELEM]).findIndex((jsonId) => {
-          return jsonId === elemNew;
-        });
-        if (found >= 0) {
-          json[value.MAINELEM][elemNew] = { ...value[value.MAINELEM][elemNew] };
-          if (json.OTHERELEMENTS) {
-            json.OTHERELEMENTS.forEach((type) => {
-              if (value[type]) {
-                json[type] = { ...json[type] };
-              }
-            });
-          }
-          return true;
-        }
+  } else if (json[value.MAINELEM]) {
+    keys(value[value.MAINELEM]).forEach((elemNew) => {
+      const found = keys(json[value.MAINELEM]).findIndex((jsonId) => {
+        return jsonId === elemNew;
       });
-    }
+      if (found >= 0) {
+        json[value.MAINELEM][elemNew] = { ...value[value.MAINELEM][elemNew] };
+        if (json.OTHERELEMENTS) {
+          json.OTHERELEMENTS.forEach((type) => {
+            if (value[type]) {
+              json[type] = { ...json[type], ...value[type] };
+            }
+          });
+        }
+        return true;
+      }
+    });
   }
-  return { ...json};
+  return { ...json };
 }
 
- /**
-  * normalizedObjectRemove : Essaye d'enlever les objets normalisés, si présents, dans une liste, pour le type spécifié
-  *
-  * @param {Object} json           La liste des objets du type spécifié en format "json normalisé"
-  * @param {string} key            Le type des objets
-  * @param {Object} value          L'objet ou les objets à supprimer en format "json normalisé"
-  *
-  * @return {Object}                La liste des objets du type spécifié en format "json normalisé" sans l'objet (ou les objets)
-  */
+/**
+ * normalizedObjectRemove : Essaye d'enlever les objets normalisés, si présents, dans une liste, pour le type spécifié
+ *
+ * @param {Object} json           La liste des objets du type spécifié en format "json normalisé"
+ * @param {string} key            Le type des objets
+ * @param {Object} value          L'objet ou les objets à supprimer en format "json normalisé"
+ *
+ * @return {Object}                La liste des objets du type spécifié en format "json normalisé" sans l'objet (ou les objets)
+ */
 export function normalizedObjectRemove(json, key, value) {
   if (!json || !value) {
     return json;
@@ -331,10 +326,10 @@ export function normalizedObjectRemove(json, key, value) {
   if (value[key] && json[key]) {
     if (value.MAINELEM === key) {
       const ids = json.SORTEDELEMS;
-      Object.keys(value[key]).forEach((elem) => {
-        const idFind = ids.indexOf(elem)
+      Object.keys(value[key]).forEach(elem => {
+        const idFind = ids.indexOf(elem);
         if (idFind >= 0) {
-          json.SORTEDELEMS.splice(idFind,1);
+          json.SORTEDELEMS.splice(idFind, 1);
           if (json[key][elem]) {
             delete json[key][elem];
           }

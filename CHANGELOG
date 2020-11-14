@@ -1,16 +1,20 @@
-# 2.0.1 11/11/2020
+# 2.0.2 : 14/11/2020
+
+* normalizedObjectUpdate : relationships from other objects
+
+# 2.0.1 : 11/11/2020
 
 * LesEcoPattes build
 
-# 2.0.0 25/10/2020
+# 2.0.0 : 25/10/2020
 
 * New rekit-studio
 * normalizedObjectUpdate
 
-# 1.2.1 04/10/2020
+# 1.2.1 : 04/10/2020
 
 * boolean in objectToQueryString as 0 or 1
 
-# 1.1.0 27/09/2020
+# 1.1.0 : 27/09/2020
 
 * First version
