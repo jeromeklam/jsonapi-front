@@ -1,4 +1,4 @@
-import { queryStringToObject, objectToQueryString } from '../src/index.js';
+import { queryStringToObject, objectToQueryString } from '../../src/features/tools/url.js';
 
 /**
  * queryStringToObject

@@ -2,22 +2,20 @@ export {
   getNewModel,
   normalizedObjectModeler,
   normalizedObjectFirstModel,
-} from './model';
+} from './features/tools/model';
 export {
   getNewJsonApi,
   getJsonApi,
   getJsonApiWithRelationships,
-} from './jsonapi';
+} from './features/tools/jsonapi';
 export {
   getNewNormalizedObject,
   normalizedObjectUpdate,
   normalizedObjectRemove,
   jsonApiNormalizer,
-} from './normalizer';
+} from './features/tools/normalizer';
 export {
   queryStringToObject,
-  objectToQueryString
-} from './url';
-export {
-  lambert93toWGPS
-} from './utils.js';
+  objectToQueryString,
+} from './features/tools/url';
+export { lambert93toWGPS } from './features/tools/utils.js';

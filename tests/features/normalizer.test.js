@@ -5,7 +5,7 @@ import {
   extractErrors,
   normalizedObjectUpdate,
   normalizedObjectRemove,
-} from '../src/normalizer.js';
+} from '../../src/features/tools/normalizer.js';
 
 /**
  * wrap
