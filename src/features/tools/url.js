@@ -23,7 +23,7 @@ export function queryStringToObject(queryString = '', first = true) {
       } else {
         if (!first) {
           myLogger.info('jsonapi-front.queryStringToObject.end');
-          return decodeURIComponent(queryString)
+          return decodeURIComponent(queryString);
         }
         myLogger.info('jsonapi-front.queryStringToObject.end');
         return {};
@@ -68,24 +68,24 @@ export function queryStringToObject(queryString = '', first = true) {
  *
  * @return {string}
  */
-export function objectToQueryString(queryObj, options = {emptyBrackets: true}, nesting_start = '', level = 0) {
+export function objectToQueryString(queryObj, options = { emptyBrackets: true }, nesting_start = '', level = 0) {
   const myLogger = log.getLogger('jsonapi-front.objectToQueryString');
   myLogger.info('jsonapi-front.objectToQueryString.start');
   if (queryObj) {
     let l_nesting_start = nesting_start;
-    let l_nesting_end = "";
+    let l_nesting_end = '';
     if (level > 0) {
       l_nesting_start += '[';
       l_nesting_end += ']';
     }
     const pairs = Object.entries(queryObj).map(([key, val]) => {
-      if (val !== null && typeof val === "object") {
+      if (val !== null && typeof val === 'object') {
         myLogger.info('jsonapi-front.objectToQueryString.end');
-        return objectToQueryString(val, options, l_nesting_start + `${key}` + l_nesting_end, level+1);
+        return objectToQueryString(val, options, l_nesting_start + `${key}` + l_nesting_end, level + 1);
       } else {
-        const numKey = (options && options.numericKeys && options.numericKeys === true) ? true : false;
-        const emptyBrackets = (options && options.emptyBrackets && options.emptyBrackets === true) ? true : false;
-        let param = l_nesting_start + ((isNaN(key) || numKey) ? key : '') + l_nesting_end;
+        const numKey = options && options.numericKeys && options.numericKeys === true ? true : false;
+        const emptyBrackets = options && options.emptyBrackets && options.emptyBrackets === true ? true : false;
+        let param = l_nesting_start + (isNaN(key) || numKey ? key : '') + l_nesting_end;
         if (!emptyBrackets && param === nesting_start + '[]') {
           param = nesting_start;
         }
@@ -98,14 +98,14 @@ export function objectToQueryString(queryObj, options = {emptyBrackets: true}, n
             }
           }
           myLogger.info('jsonapi-front.objectToQueryString.end');
-          return [param, val].join("=");
+          return [param, val].join('=');
         } else {
           myLogger.info('jsonapi-front.objectToQueryString.end');
-          return [param, ''].join("=");
+          return [param, ''].join('=');
         }
       }
     });
-    let queryString = pairs.join("&");
+    let queryString = pairs.join('&');
     if (level === 0 && queryString !== '') {
       queryString = '?' + queryString;
     }
