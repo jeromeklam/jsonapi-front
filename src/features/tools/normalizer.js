@@ -125,8 +125,11 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
   let myLogger = log.getLogger('jsonapi-front.jsonApiNormalizer');
   myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.start');
   const ret = origin;
-  wrap(json).forEach(elem => {
-    const locId = `${elem.id}`;
+  wrap(json).forEach((elem) => {
+    let locId = `${elem.id}`;
+    if (locId === '') {
+      locId = '0';
+    }
     if (!elem.errors) {
       const type = camelizeKeys ? camelCase(elem.type) : elem.type;
       if (mainElement) {
