@@ -1,3 +1,8 @@
+# 3.0.1 : 19/11/2020
+
+* total results from jsonApi Object to normalizer
+* No null or empty string for id in normaizedObject : converted to 0 
+
 # 3.0.0 : 14/11/2020
 
 * rekit 3 compatible

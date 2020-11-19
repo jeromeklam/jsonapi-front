@@ -259,6 +259,7 @@ test('jsonApiNormalizer : Verify error ', () => {
     ],
   });
   expect(result).toEqual({
+    TOTAL: false,
     errors: [
       {
         isFlash: true,
@@ -288,6 +289,7 @@ test('jsonApiNormalizer : Verify errors ', () => {
     ],
   });
   expect(result).toEqual({
+    TOTAL: false,
     errors: [
       {
         isFlash: true,
@@ -309,6 +311,18 @@ test('jsonApiNormalizer : Verify errors ', () => {
 test('jsonApiNormalizer : Verify simple object', () => {
   const result = jsonApiNormalizer({ data: { attributes: { name: 'test' }, id: '45', type: 'Free_Test' } });
   expect(result).toEqual({
+    TOTAL: 1,
+    MAINELEM: 'Free_Test',
+    SORTEDELEMS: ['45'],
+    Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
+    errors: [],
+    length: 1,
+  });
+});
+test('jsonApiNormalizer : Verify simple object with count', () => {
+  const result = jsonApiNormalizer({ meta: { count: 56 }, data: { attributes: { name: 'test' }, id: '45', type: 'Free_Test' } });
+  expect(result).toEqual({
+    TOTAL: 56,
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
@@ -319,6 +333,7 @@ test('jsonApiNormalizer : Verify simple object', () => {
 test('jsonApiNormalizer : Verify simple object id num', () => {
   const result = jsonApiNormalizer({ data: { attributes: { name: 'test' }, id: 45, type: 'Free_Test' } });
   expect(result).toEqual({
+    TOTAL: 1,
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
@@ -339,6 +354,7 @@ test('jsonApiNormalizer : Verify simple object with items', () => {
     }
   );
   expect(result).toEqual({
+    TOTAL: 3,
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['21', '90', '45'],
     OTHERELEMENTS: [],
@@ -372,6 +388,7 @@ test('jsonApiNormalizer : Verify list object with items', () => {
     }
   );
   expect(result).toEqual({
+    TOTAL: 4,
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['21', '90', '45', '46'],
     OTHERELEMENTS: [],

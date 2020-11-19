@@ -395,6 +395,10 @@ export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
     const uniqueSet = new Set(origin.SORTEDELEMS);
     origin.SORTEDELEMS = [...uniqueSet];
   }
+  origin.TOTAL = Array.isArray(origin.SORTEDELEMS) ? origin.SORTEDELEMS.length : false;
+  if (json.meta && json.meta.count) {
+    origin.TOTAL = json.meta.count;
+  }
   myLogger.info('jsonapi-front.jsonApiNormalizer.end');
   return origin;
 }
