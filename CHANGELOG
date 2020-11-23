@@ -1,3 +1,7 @@
+# 3.0.2 : 23/11/2020
+
+* getJsonApi : les relations avec id à 0 étaient ignorées, ajoutées avec id = ''
+
 # 3.0.1 : 19/11/2020
 
 * total results from jsonApi Object to normalizer

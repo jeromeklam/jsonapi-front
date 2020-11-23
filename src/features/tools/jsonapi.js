@@ -122,10 +122,14 @@ function getJsonApiRelationships(obj, debug = false) {
               type: elem.type,
             });
           });
-        } else if (obj[key] && obj[key].id && obj[key].id !== '0' && obj[key].type) {
+        } else if (obj[key] && obj[key].id && obj[key].type && obj[key].type !== '') {
+          let locId = obj[key].id;
+          if (locId === '0' || locId === 0) {
+            locId = '';
+          }
           rels[key] = {
             data: {
-              id: obj[key].id,
+              id: locId,
               type: obj[key].type,
             },
           };

@@ -5,27 +5,27 @@ import { getJsonApi, getNewJsonApi } from '../../src/features/tools/jsonapi.js';
  */
 test('getNewJsonApi : Verify simple number id', () => {
   const result = getNewJsonApi('Free_Test', 45);
-  expect(result).toEqual({"data": {"attributes": {}, "id": "45", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '45', type: 'Free_Test' } });
 });
 test('getNewJsonApi : Verify simple string id', () => {
   const result = getNewJsonApi('Free_Test', '45');
-  expect(result).toEqual({"data": {"attributes": {}, "id": "45", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '45', type: 'Free_Test' } });
 });
 test('getNewJsonApi : Verify simple number id 0', () => {
   const result = getNewJsonApi('Free_Test', 0);
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 test('getNewJsonApi : Verify simple string id "0"', () => {
-  const result = getNewJsonApi('Free_Test', "0");
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  const result = getNewJsonApi('Free_Test', '0');
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 test('getNewJsonApi : Verify simple id empty', () => {
-  const result = getNewJsonApi('Free_Test', "");
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  const result = getNewJsonApi('Free_Test', '');
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 test('getNewJsonApi : Verify simple id null', () => {
   const result = getNewJsonApi('Free_Test', null);
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 
 /**
@@ -33,15 +33,29 @@ test('getNewJsonApi : Verify simple id null', () => {
  */
 test('getJsonApi : Verify {}', () => {
   const result = getJsonApi({}, 'Free_Test');
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 
 test('getJsonApi : Verify null', () => {
   const result = getJsonApi(null, 'Free_Test');
-  expect(result).toEqual({"data": {"attributes": {}, "id": "", "type": "Free_Test"}});
+  expect(result).toEqual({ data: { attributes: {}, id: '', type: 'Free_Test' } });
 });
 
 test('getJsonApi : Verify simple object', () => {
-  const result = getJsonApi({id: "45", type: 'Free_Test', name: 'test'}, 'Free_Test');
-  expect(result).toEqual({"data": {"attributes": { name: 'test'}, "id": "45", "type": "Free_Test"}});
+  const result = getJsonApi({ id: '45', type: 'Free_Test', name: 'test' }, 'Free_Test');
+  expect(result).toEqual({ data: { attributes: { name: 'test' }, id: '45', type: 'Free_Test' } });
+});
+test('getJsonApi : Verify object with relation', () => {
+  const result = getJsonApi(
+    { id: '45', type: 'Free_Test', name: 'test', test: { id: '0', type: 'FreeTest2' } },
+    'Free_Test'
+  );
+  expect(result).toEqual({
+    data: {
+      attributes: { name: 'test' },
+      id: '45',
+      relationships: { test: { data: { id: '', type: 'FreeTest2' } } },
+      type: 'Free_Test',
+    },
+  });
 });
