@@ -8,29 +8,30 @@ import log from 'loglevel';
 /**
  * getNewNormalizedObject : Renvoie un nouvel objet normalisé du type spécifié
  *
- * @param {string} p_type          Le type
- * @param {(string|number)} p_id   L'identifiant
+ * @param {string} pType          Le type
+ * @param {(string|number)} pId   L'identifiant
  *
  * @return {Object}                Nouvel objet normalisé
  */
-export function getNewNormalizedObject(p_type = '', p_id = '') {
+export function getNewNormalizedObject(pType = '', pId = '') {
   const myLogger = log.getLogger('jsonapi-front.getNewNormalizedObject');
   myLogger.info('jsonapi-front.getNewNormalizedObject.start');
   let json = {};
-  if (p_type === '') {
+  if (pType === '') {
     myLogger.error("jsonapi-front.getNewNormalizedObject : Type le l'objet non renseigné ");
     myLogger.info('jsonapi-front.getNewNormalizedObject.end');
     return json;
   }
-  json[p_type] = {};
+  json[pType] = {};
   json.SORTEDELEMS = [];
-  json.MAINELEM = p_type;
+  json.MAINELEM = pType;
+  json.TOTAL = '?';
   json.errors = [];
   json.length = 0;
-  if (p_id && p_id !== null) {
-    const id = isNaN(p_id) ? p_id : p_id.toString();
+  if (pId && pId !== null) {
+    const id = isNaN(pId) ? pId : pId.toString();
     json.SORTEDELEMS.push(id);
-    json[p_type][id] = {
+    json[pType][id] = {
       id: id,
       attributes: {},
     };
