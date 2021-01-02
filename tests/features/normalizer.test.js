@@ -48,7 +48,14 @@ test('getNewNormalizedObject : Verify vide', () => {
 });
 test('getNewNormalizedObject : Verify ""', () => {
   const result = getNewNormalizedObject('Free_Test');
-  expect(result).toEqual({ MAINELEM: 'Free_Test', SORTEDELEMS: [], Free_Test: {}, errors: [], length: 0 });
+  expect(result).toEqual({
+    MAINELEM: 'Free_Test',
+    SORTEDELEMS: [],
+    Free_Test: {},
+    TOTAL: "?",
+    errors: [],
+    length: 0
+  });
 });
 test('getNewNormalizedObject : Verify simple', () => {
   const result = getNewNormalizedObject('Free_Test', '45');
@@ -56,6 +63,7 @@ test('getNewNormalizedObject : Verify simple', () => {
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: {}, id: '45' } },
+    TOTAL: "?",
     errors: [],
     length: 1,
   });
@@ -73,6 +81,7 @@ test('normalizedObjectUpdate : Verify empty items with object ignoreAdd', () => 
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
+    TOTAL: "?",
     errors: [],
     length: 1,
   });
@@ -95,6 +104,7 @@ test('normalizedObjectUpdate : Verify empty items with object not ignoreAdd', ()
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
+    TOTAL: "?",
     errors: [],
     length: 1,
   });
