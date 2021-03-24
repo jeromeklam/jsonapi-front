@@ -154,7 +154,7 @@ function getJsonApiIncluded(obj, includes = [], debug = false) {
         if (Array.isArray(obj[key])) {
           obj[key].forEach((elem) => {
             const idx1 = includes.findIndex(el1 => el1.id == elem.id && el1.type == elem.type);
-            console.log(idx1, elem.id, elem.type);
+            //console.log(idx1, elem.id, elem.type);
             if (idx1 < 0) {
               includes.push({id: elem.id, type: elem.type});
               const obj2 = getJsonApi(elem, elem.type, includes);
@@ -169,7 +169,7 @@ function getJsonApiIncluded(obj, includes = [], debug = false) {
           });
         } else if (obj[key] && obj[key].id && obj[key].id !== '0' && obj[key].type) {
           const idx2 = includes.findIndex(el2 => el2.id == obj[key].id && el2.type == obj[key].type);
-          console.log(idx2, obj[key].id, obj[key].type, includes);
+          //console.log(idx2, obj[key].id, obj[key].type, includes);
           if (idx2 < 0) {
             includes.push({id: obj[key].id, type: obj[key].type});
             const obj3 = getJsonApi(obj[key], obj[key].type, includes);
