@@ -18,7 +18,7 @@ export function getNewNormalizedObject(pType = '', pId = '') {
   myLogger.info('jsonapi-front.getNewNormalizedObject.start');
   let json = {};
   if (pType === '') {
-    myLogger.error("jsonapi-front.getNewNormalizedObject : Type le l'objet non renseigné ");
+    myLogger.error("jsonapi-front.getNewNormalizedObject : Type de l'objet non renseigné ");
     myLogger.info('jsonapi-front.getNewNormalizedObject.end');
     return json;
   }

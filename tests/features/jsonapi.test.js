@@ -59,3 +59,20 @@ test('getJsonApi : Verify object with relation', () => {
     },
   });
 });
+let parentObj1 = {id: '45', type: 'Free_Test', name: 'test'};
+parentObj1.parent = parentObj1;
+test('getJsonApi : Verify object with recursion', () => {
+  const result = getJsonApi(
+    parentObj1,
+    'Free_Test'
+  );
+  expect(result).toEqual({
+    data: {
+      attributes: {"name": "test"},
+      id: "45",
+      relationships: {"parent": {"data": {"id": "45", "type": "Free_Test"}}},
+      type: "Free_Test"
+    },
+    included: [{"attributes": {"name": "test"}, "id": "45", "relationships": {"parent": {"data": {"id": "45", "type": "Free_Test"}}}, "type": "Free_Test"}]
+  });
+});

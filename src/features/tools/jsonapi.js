@@ -27,15 +27,13 @@ export function getNewJsonApi(p_type, p_id = "", p_attributes = {}) {
 /**
  * getJsonApi : Converti un modèle en object JsonApi
  *
- * @param {Object} obj   Le modèle
- * @param {string} type  Le type
+ * @param {Object} obj      Le modèle
+ * @param {string} type     Le type
+ * @param {array}  includes Les objets inclus
  *
  * @return {Object}      L'objet JsonApi
  */
-export function getJsonApi(obj, type = null) {
-  const attributes = getJsonApiAttributes(obj);
-  const relations = getJsonApiRelationships(obj);
-  const included = getJsonApiIncluded(obj);
+export function getJsonApi(obj, type = null, includes = []) {
   let myType = type;
   let id     = "";
   if (obj) {
@@ -50,6 +48,10 @@ export function getJsonApi(obj, type = null) {
       id = id;
     }
   }
+  //includes.push({id: id, type: myType});
+  const attributes = getJsonApiAttributes(obj);
+  const relations = getJsonApiRelationships(obj);
+  const included = getJsonApiIncluded(obj, includes);
   let jsonApi = {
     data: {
       type: myType,
@@ -143,7 +145,7 @@ function getJsonApiRelationships(obj, debug = false) {
 /**
  * @ignore
  */
-function getJsonApiIncluded(obj, debug = false) {
+function getJsonApiIncluded(obj, includes = [], debug = false) {
   let included = [];
   if (obj) {
     const keys = Object.getOwnPropertyNames(obj);
@@ -151,23 +153,33 @@ function getJsonApiIncluded(obj, debug = false) {
       if (key.substring(0, 1) !== '_') {
         if (Array.isArray(obj[key])) {
           obj[key].forEach((elem) => {
-            const obj2 = getJsonApi(elem, elem.type, debug);
-            if (obj2.included) {
-              included = included.concat(obj2.included);
-              delete obj2.included;
-            }
-            if (obj2.data) {
-              included.push(obj2.data);
+            const idx1 = includes.findIndex(el1 => el1.id == elem.id && el1.type == elem.type);
+            console.log(idx1, elem.id, elem.type);
+            if (idx1 < 0) {
+              includes.push({id: elem.id, type: elem.type});
+              const obj2 = getJsonApi(elem, elem.type, includes);
+              if (obj2.included) {
+                included = included.concat(obj2.included);
+                delete obj2.included;
+              }
+              if (obj2.data) {
+                included.push(obj2.data);
+              }
             }
           });
         } else if (obj[key] && obj[key].id && obj[key].id !== '0' && obj[key].type) {
-          const obj3 = getJsonApi(obj[key], obj[key].type, debug);
-          if (obj3.included) {
-            included = included.concat(obj3.included);
-            delete obj3.included;
-          }
-          if (obj3.data) {
-            included.push(obj3.data);
+          const idx2 = includes.findIndex(el2 => el2.id == obj[key].id && el2.type == obj[key].type);
+          console.log(idx2, obj[key].id, obj[key].type, includes);
+          if (idx2 < 0) {
+            includes.push({id: obj[key].id, type: obj[key].type});
+            const obj3 = getJsonApi(obj[key], obj[key].type, includes);
+            if (obj3.included) {
+              included = included.concat(obj3.included);
+              delete obj3.included;
+            }
+            if (obj3.data) {
+              included.push(obj3.data);
+            }
           }
         }
       }
