@@ -23,7 +23,7 @@
     "build": "cross-env NODE_ENV=production rollup -c -o dist/jsonapi-front.js",
     "test": "cross-env NODE_ENV=test jest",
     "doc:jsdoc": "cross-env NODE_ENV=development jsdoc -c jsdoc.json -d doc",
-    "doc:mddoc": "cross-env NODE_ENV=development jsdoc2md --configure jsdoc2md.json --files src/*.js > doc/api.md",
+    "doc:mddoc": "cross-env NODE_ENV=development jsdoc2md --configure jsdoc2md.json --files src/features/tools/*.js > doc/api.md",
     "doc:all": "npm run doc:jsdoc && npm run doc:mddoc",
     "doc:prepare": "cross-env NODE_ENV=development gitbook install",
     "doc:serve": "npm run doc:prepare && npm run doc:mddoc && gitbook serve",
