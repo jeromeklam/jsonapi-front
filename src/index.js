@@ -18,4 +18,4 @@ export {
   queryStringToObject,
   objectToQueryString,
 } from './features/tools/url';
-export { lambert93toWGPS } from './features/tools/utils.js';
+export { deepClone, lambert93toWGPS } from './features/tools/utils.js';

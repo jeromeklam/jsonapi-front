@@ -1,11 +1,15 @@
 /**
+ * @module jsonapi
+ */
+
+/**
  * getNewJsonApi : Renvoi un objet JsonApi vide
  *
- * @param {string} p_type         Type de l'objet JsonApi
- * @param {string} p_id           Identifiant de l'objet JsonApi
- * @param {Object} p_attributes   Attributs à ajouter à l'objet JsonApi vide
+ * @param p_type {string} - Type de l'objet JsonApi
+ * @param p_id {string} - Identifiant de l'objet JsonApi
+ * @param p_attributes {Object} - Attributs à ajouter à l'objet JsonApi vide
  *
- * @return {Object}               L'objet JsonApi vide
+ * @return {Object} - L'objet JsonApi vide
  *
  */
 export function getNewJsonApi(p_type, p_id = "", p_attributes = {}) {
@@ -27,11 +31,11 @@ export function getNewJsonApi(p_type, p_id = "", p_attributes = {}) {
 /**
  * getJsonApi : Converti un modèle en object JsonApi
  *
- * @param {Object} obj      Le modèle
- * @param {string} type     Le type
- * @param {array}  includes Les objets inclus
+ * @param obj {Object} - Le modèle
+ * @param type {string} - Le type
+ * @param includes {array} - Les objets inclus
  *
- * @return {Object}      L'objet JsonApi
+ * @return {Object} - L'objet JsonApi
  */
 export function getJsonApi(obj, type = null, includes = []) {
   let myType = type;
@@ -70,7 +74,7 @@ export function getJsonApi(obj, type = null, includes = []) {
 }
 
 /**
- *
+ * @ignore
  */
 export function getJsonApiWithRelationships(name, id_field, attributes, relationships) {
   const jsonApi = {
@@ -85,7 +89,7 @@ export function getJsonApiWithRelationships(name, id_field, attributes, relation
 }
 
 /**
- *
+ * @ignore
  */
 function getJsonApiAttributes(obj) {
   let ret = {};
@@ -108,7 +112,7 @@ function getJsonApiAttributes(obj) {
 }
 
 /**
- *
+ * @ignore
  */
 function getJsonApiRelationships(obj, debug = false) {
   let rels = {};
@@ -189,7 +193,7 @@ function getJsonApiIncluded(obj, includes = [], debug = false) {
 }
 
 /**
- *
+ * @ignore
  */
 export function addRelationships(name, type, obj) {
   let jsonApiRelationships = getJsonApi(obj, type, 0);
