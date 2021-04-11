@@ -1,12 +1,10 @@
-language: node_js
-node_js:
-  - "lts/*"
-  - "node"
-
-before_script: npm run lint
-script: npm run test
-after_success: npm run coveralls
-
-branches:
-  only:
-    - master
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12.10
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm test
