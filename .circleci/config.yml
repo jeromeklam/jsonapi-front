@@ -1,12 +1,14 @@
-language: node_js
-node_js:
-  - "lts/*"
-  - "node"
+version: 2.1
 
-before_script: npm run lint
-script: npm run test
-after_success: npm run coveralls
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12
 
-branches:
-  only:
-    - master
+    working_directory: ~/
+
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm build
+      - run: npm test
