@@ -1,3 +1,6 @@
+/**
+ * @module url
+ */
 import log from 'loglevel';
 
 /**
@@ -5,9 +8,9 @@ import log from 'loglevel';
  *
  * @summary Le but de cette fonction est de convertir un url du style ?param=1test vers un objet javascript
  *
- * @param {string} queryString La chaine à convertir
+ * @param queryString {string} - La chaine à convertir
  *
- * @return {Object} | {String}
+ * @return {Object} - L'url décodée sous forme d'objet
  */
 export function queryStringToObject(queryString = '', first = true) {
   const myLogger = log.getLogger('jsonapi-front.queryStringToObject');

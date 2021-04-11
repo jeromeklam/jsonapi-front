@@ -1,3 +1,7 @@
+/**
+ * @module utils
+ */
+
 //function definition
 export function lambert93toWGPS(lambertE, lambertN) {
 
@@ -32,6 +36,13 @@ export function lambert93toWGPS(lambertE, lambertN) {
   return [longitude, latitude]
 }
 
+/**
+ * deepClone : Copie complète d'un objet
+ *
+ * @param obj {Object} - L'objet à copier
+ *
+ * @return {Object} - La copie de l'objet
+ */
 export function deepClone(obj) {
   if (obj === null) {
     return null;

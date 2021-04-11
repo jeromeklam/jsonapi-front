@@ -1,33 +1,30 @@
-## Functions
+<a name="module_url"></a>
 
-<dl>
-<dt><a href="#queryStringToObject">queryStringToObject(queryString)</a> ⇒ <code>Object</code></dt>
-<dd><p>queryStringToObject : Conversion d&#39;une chaine de caractère vers un objet javascript.</p>
-</dd>
-<dt><a href="#objectToQueryString">objectToQueryString(queryObj, options, nesting_start, level)</a> ⇒ <code>string</code></dt>
-<dd><p>objectToQueryString : Conversion d&#39;un objet javascript en uri</p>
-</dd>
-</dl>
+## url
 
-<a name="queryStringToObject"></a>
+* [url](#module_url)
+    * [.queryStringToObject(queryString)](#module_url.queryStringToObject) ⇒ <code>Object</code>
+    * [.objectToQueryString(queryObj, options, nesting_start, level)](#module_url.objectToQueryString) ⇒ <code>string</code>
 
-## queryStringToObject(queryString) ⇒ <code>Object</code>
+<a name="module_url.queryStringToObject"></a>
+
+### url.queryStringToObject(queryString) ⇒ <code>Object</code>
 queryStringToObject : Conversion d'une chaine de caractère vers un objet javascript.
 
-**Kind**: global function  
+**Kind**: static method of [<code>url</code>](#module_url)  
 **Summary**: Le but de cette fonction est de convertir un url du style ?param=1test vers un objet javascript  
-**Returns**: <code>Object</code> - | {String}  
+**Returns**: <code>Object</code> - - L'url décodée sous forme d'objet  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | queryString | <code>string</code> | La chaine à convertir |
 
-<a name="objectToQueryString"></a>
+<a name="module_url.objectToQueryString"></a>
 
-## objectToQueryString(queryObj, options, nesting_start, level) ⇒ <code>string</code>
+### url.objectToQueryString(queryObj, options, nesting_start, level) ⇒ <code>string</code>
 objectToQueryString : Conversion d'un objet javascript en uri
 
-**Kind**: global function  
+**Kind**: static method of [<code>url</code>](#module_url)  
 
 | Param | Type | Description |
 | --- | --- | --- |
