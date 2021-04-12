@@ -7,4 +7,4 @@ export {
   jsonApiNormalizer,
 } from './normalizer';
 export { queryStringToObject, objectToQueryString } from './url';
-export { lambert93toWGPS } from './utils.js';
+export { deepClone, lambert93toWGPS } from './utils.js';
