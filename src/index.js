@@ -1,4 +1,5 @@
 export {
+  setModelValue,
   getNewModel,
   normalizedObjectModeler,
   normalizedObjectFirstModel,

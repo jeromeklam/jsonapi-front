@@ -1,23 +1,57 @@
 /**
- * uniqueId
- *
- * @ignore
+ * @module model
  */
-export function uniqueId(objectName, id) {
-  if (!id) {
+
+/**
+ * get uniqueId
+ *
+ *  @ignore
+ * 
+ * @param {String} pObjectName - Nom de l'objet
+ * @param {Mixed} pId - Identifiant de l'object
+ * 
+ * @return {String}
+ */
+export function uniqueId(pObjectName, pId) {
+  if (!pId) {
     return null;
   }
-  return `${objectName}${id}`;
+  return `${pObjectName}${pId}`;
 }
+
+/**
+ * setModelValue : Affecte une valeur à une clef d'un modèle, niveaux séparés par .
+ * 
+ * @param pModel {Object} - Le modèle
+ * @param pKey {String} - La clef à mettre à jour
+ * @param pValue {Mixed} - La valeur à affecter
+ */
+ export function setModelValue(pModel, pKey, pValue) {
+  try {
+    let datas = null;
+    let fromObj = pModel;
+    let elems = pKey.split('.');
+    let first = null;
+    while (elems.length > 0) {
+      if (first !== null) {
+        fromObj = fromObj[first];
+      }
+      first = elems.shift();
+    }
+    fromObj[first] = pValue;
+  } catch (ex) {
+    console.error(ex);
+  }
+};
 
 /**
  * getNewModel : Retourne un nouveau modèle de travail
  *
- * @param {string}          pType
- * @param {(string|number)} pId
- * @param {Object}          pAttributes
+ * @param pType {string} - Le type
+ * @param pId {(string|number)} - l'identifiant
+ * @param pAttributes {Object} - Les attributs
  *
- * @returns {Object}
+ * @return {Object}
  */
 export function getNewModel(pType, pId, pAttributes = {}) {
   let id = pId;
@@ -92,13 +126,15 @@ function buildModelRelationship(
 /**
  * get a model from a NormalizedObject
  *
- * @param {Object} pObj             NormalizedObject objet unique ou liste d'objets
- * @param {string} pType            Nom du model
- * @param {(string|number)}  pId    Identifiant de l'objet
- * @param {Object} providedOpts      eager
- * @param {Object} cache
- * @param {number} level
- * @param {Object} done
+ * @param pObj {Object} - NormalizedObject objet unique ou liste d'objets
+ * @param pType {string} - Nom du model
+ * @param pId {(string|number)} - Identifiant de l'objet
+ * @param providedOpts {Object} - Options
+ * @param cache {Object} - Champ technique cache
+ * @param level {number} - Champ technique niveau
+ * @param done {Object} - Champ technique terminé
+ * 
+ * @return {Object}
  */
 export function normalizedObjectModeler(
   pObj,
@@ -199,10 +235,10 @@ export function normalizedObjectModeler(
 /**
  * buildFirstModel : Retourne le premier modèle disponible dans une utilisateur
  *
- * @param {Object} pObj   L'object au format normalisé
- * @param {string} pType  Le type de l'objet
+ * @param pObj {Object} - L'object au format normalisé
+ * @param pType {string} - Le type de l'objet
  *
- * @return {(Object|null)}
+ * @return {(Object|null)} - Modèle demandé ou null si non trouvé
  */
 export function normalizedObjectFirstModel(pObj, pType) {
   const models = normalizedObjectModeler(pObj, pType);
