@@ -237,11 +237,12 @@ export function normalizedObjectModeler(
  *
  * @param pObj {Object} - L'object au format normalisé
  * @param pType {string} - Le type de l'objet
+ * @param providedOpts {Object} - Options
  *
  * @return {(Object|null)} - Modèle demandé ou null si non trouvé
  */
-export function normalizedObjectFirstModel(pObj, pType) {
-  const models = normalizedObjectModeler(pObj, pType);
+export function normalizedObjectFirstModel(pObj, pType, providedOpts = {}) {
+  const models = normalizedObjectModeler(pObj, pType, null, providedOpts);
   if (models && models.length > 0) {
     return models[0];
   }
