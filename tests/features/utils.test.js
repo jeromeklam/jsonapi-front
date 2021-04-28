@@ -31,3 +31,8 @@ test('deepClone : Verify simple array', () => {
   const result = deepClone(['45', '55']);
   expect(result).toEqual(['45', '55']);
 });
+test('deepClone : Verify object with date', () => {
+  let nDate = new Date();
+  const result = deepClone({'test': '55', 'date': nDate});
+  expect(result).toEqual({'test': '55', 'date': nDate});
+});

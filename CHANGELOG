@@ -1,3 +1,7 @@
+# 3.4.1 : --/--/2021
+
+* deepClone : fix date pb
+
 # 3.4.0 : 19/04/2021
 
 * Test sur la documentation

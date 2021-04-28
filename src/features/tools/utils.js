@@ -44,8 +44,11 @@ export function lambert93toWGPS(lambertE, lambertN) {
  * @return {Object} - La copie de l'objet
  */
 export function deepClone(obj) {
-  if (obj === null) {
-    return null;
+  if(typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+  if(obj instanceof Date) {
+    return new Date(obj.getTime());
   }
   if (typeof obj === 'object' || Array.isArray(obj)) {
     let clone = Object.assign({}, obj);
