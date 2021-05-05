@@ -166,7 +166,7 @@ function getJsonApiIncluded(obj, includes = [], debug = false) {
                 included = included.concat(obj2.included);
                 delete obj2.included;
               }
-              if (obj2.data) {
+              if (obj2.data && obj2.data.attributes && Object.keys(obj2.data.attributes).length) {
                 included.push(obj2.data);
               }
             }
@@ -181,7 +181,7 @@ function getJsonApiIncluded(obj, includes = [], debug = false) {
               included = included.concat(obj3.included);
               delete obj3.included;
             }
-            if (obj3.data) {
+            if (obj3.data && obj3.data.attributes && Object.keys(obj3.data.attributes).length) {
               included.push(obj3.data);
             }
           }
