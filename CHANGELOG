@@ -1,3 +1,7 @@
+# 3.4.2 : 05/05/2021
+
+* fix(jsonapi): no empty included
+
 # 3.4.1 : 28/04/2021
 
 * deepClone : fix date pb
