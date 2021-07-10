@@ -3,7 +3,7 @@ import {
   getNewModel,
   normalizedObjectModeler,
   normalizedObjectFirstModel,
-} from '../../src/features/tools/model.js';
+} from '../../../src/features/tools/model.js';
 
 const Norm3 = {
   MAINELEM: 'Free_Test',

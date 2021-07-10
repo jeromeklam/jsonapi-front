@@ -1,3 +1,8 @@
+# 3.4.3 : 10/07/2021
+
+* fix(objectToQueryString): Dates
+* fix(general): test folder
+
 # 3.4.2 : 05/05/2021
 
 * fix(jsonapi): no empty included

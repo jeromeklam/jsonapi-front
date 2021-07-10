@@ -1,4 +1,4 @@
-import { getJsonApi, getNewJsonApi } from '../../src/features/tools/jsonapi.js';
+import { getJsonApi, getNewJsonApi } from '../../../src/features/tools/jsonapi.js';
 
 /**
  * getNewJsonApi

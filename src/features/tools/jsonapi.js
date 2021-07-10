@@ -12,10 +12,10 @@
  * @return {Object} - L'objet JsonApi vide
  *
  */
-export function getNewJsonApi(p_type, p_id = "", p_attributes = {}) {
+export function getNewJsonApi(p_type, p_id = '', p_attributes = {}) {
   let id = p_id;
-  if (id === null || id === 0 || id === "0" ) {
-    id = "";
+  if (id === null || id === 0 || id === '0' ) {
+    id = '';
   } else {
     id = isNaN(p_id) ? p_id : p_id.toString();
   }

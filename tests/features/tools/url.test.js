@@ -1,4 +1,4 @@
-import { queryStringToObject, objectToQueryString } from '../../src/features/tools/url.js';
+import { queryStringToObject, objectToQueryString } from '../../../src/features/tools/url.js';
 
 /**
  * queryStringToObject
@@ -69,4 +69,9 @@ test('objectToQueryString : Verify {param1: 45, param2: [test1, test2]}', () => 
 test('objectToQueryString : Verify {param1: 45, param2: [test1, test2]} with emptyBrackets', () => {
   const result = objectToQueryString({param1: '45', param2: ['test1', 'test2']}, {emptyBrackets: true});
   expect(result).toEqual('?param1=45&param2[]=test1&param2[]=test2');
+});
+const myTest = new Date();
+test('objectToQueryString : Verify {param1: 45, param2: { between: [Date, Date] } } with emptyBrackets', () => {
+  const result = objectToQueryString({param1: '45', param2: { between : [myTest, myTest] } }, {emptyBrackets: true});
+  expect(result).toEqual('?param1=45&param2[between][]=' + myTest.toISOString() + '&param2[between][]=' + myTest.toISOString());
 });
