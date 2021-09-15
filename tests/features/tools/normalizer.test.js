@@ -52,7 +52,7 @@ test('getNewNormalizedObject : Verify ""', () => {
     MAINELEM: 'Free_Test',
     SORTEDELEMS: [],
     Free_Test: {},
-    TOTAL: "?",
+    TOTAL: 0,
     errors: [],
     length: 0
   });
@@ -63,7 +63,7 @@ test('getNewNormalizedObject : Verify simple', () => {
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: {}, id: '45' } },
-    TOTAL: "?",
+    TOTAL: 1,
     errors: [],
     length: 1,
   });
@@ -81,7 +81,7 @@ test('normalizedObjectUpdate : Verify empty items with object ignoreAdd', () => 
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
-    TOTAL: "?",
+    TOTAL: 1,
     errors: [],
     length: 1,
   });
@@ -104,7 +104,7 @@ test('normalizedObjectUpdate : Verify empty items with object not ignoreAdd', ()
     MAINELEM: 'Free_Test',
     SORTEDELEMS: ['45'],
     Free_Test: { '45': { attributes: { name: 'test' }, id: '45' } },
-    TOTAL: "?",
+    TOTAL: 1,
     errors: [],
     length: 1,
   });
@@ -156,6 +156,7 @@ test('normalizedObjectUpdate : Verify items with complex object', () => {
     SORTEDELEMS: ['1'],
     Free_Test: { '1': { attributes: { name: 'text 1' }, id: '1' } },
     Free_Other: { '66': { attributes: { name: 'elem 1' }, id: '66' }, '77': { attributes: { name: 'elem 2' }, id: '77' } },
+    TOTAL: 1,
     length: 1,
   });
 });
@@ -269,7 +270,7 @@ test('jsonApiNormalizer : Verify error ', () => {
     ],
   });
   expect(result).toEqual({
-    TOTAL: false,
+    TOTAL: 0,
     errors: [
       {
         isFlash: true,
@@ -299,7 +300,7 @@ test('jsonApiNormalizer : Verify errors ', () => {
     ],
   });
   expect(result).toEqual({
-    TOTAL: false,
+    TOTAL: 0,
     errors: [
       {
         isFlash: true,

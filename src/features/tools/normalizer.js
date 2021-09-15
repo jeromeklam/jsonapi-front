@@ -25,7 +25,6 @@ export function getNewNormalizedObject(pType = '', pId = '') {
   json[pType] = {};
   json.SORTEDELEMS = [];
   json.MAINELEM = pType;
-  json.TOTAL = '?';
   json.errors = [];
   json.length = 0;
   if (pId && pId !== null) {
@@ -37,6 +36,7 @@ export function getNewNormalizedObject(pType = '', pId = '') {
     };
     json.length = 1;
   }
+  json.TOTAL = json.length;
   myLogger.debug(json);
   myLogger.info('jsonapi-front.getNewNormalizedObject.end');
   return json;
@@ -103,7 +103,7 @@ function extractRelationships(relationships, { camelizeKeys }) {
 function extractErrors(p_json, p_opts = { camelizeKeys: true }) {
   let ret = [];
   if (Array.isArray(p_json)) {
-    p_json.forEach(elem => {
+    p_json.forEach((elem) => {
       elem['isFlash'] = true;
       if (elem.meta && elem.meta.field) {
         elem['isFlash'] = false;
@@ -244,10 +244,13 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
   if (!json[key] && !ignoreAdd) {
     json = getNewNormalizedObject('Free_Test');
   }
-  if (!json.TOTAL || isNaN(json.TOTAL)) {
-    json.TOTAL = 0;
-  }
   if (value[key] && json[key]) {
+    if (!json.TOTAL || isNaN(json.TOTAL)) {
+      json.TOTAL = 0;
+      if (Array.isArray(json.SORTEDELEMS)) {
+        json.TOTAL = json.SORTEDELEMS.length;
+      }
+    }
     if (value.MAINELEM === key) {
       const ids = json.SORTEDELEMS;
       keys(value[key]).forEach((elem) => {
@@ -272,7 +275,7 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
             json.TOTAL++;
           }
           if (value.OTHERELEMENTS) {
-            value.OTHERELEMENTS.forEach((type) => {
+            value.OTHERELEMENTS.forEach(type => {
               if (!json[type]) {
                 json[type] = {};
               }
@@ -282,14 +285,14 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
         }
       });
     } else {
-      keys(value[key]).forEach((elemNew) => {
-        const found = keys(json[key]).findIndex((jsonId) => {
+      keys(value[key]).forEach(elemNew => {
+        const found = keys(json[key]).findIndex(jsonId => {
           return jsonId === value[key][elemNew].id;
         });
         if (found >= 0) {
           json[key][elemNew] = { ...value[key][elemNew] };
           if (value.OTHERELEMENTS) {
-            value.OTHERELEMENTS.forEach((type) => {
+            value.OTHERELEMENTS.forEach(type => {
               if (!json[type]) {
                 json[type] = {};
               }
@@ -303,14 +306,14 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
     }
     json.length = json.SORTEDELEMS.length;
   } else if (json[value.MAINELEM]) {
-    keys(value[value.MAINELEM]).forEach((elemNew) => {
-      const found = keys(json[value.MAINELEM]).findIndex((jsonId) => {
+    keys(value[value.MAINELEM]).forEach(elemNew => {
+      const found = keys(json[value.MAINELEM]).findIndex(jsonId => {
         return jsonId === elemNew;
       });
       if (found >= 0) {
         json[value.MAINELEM][elemNew] = { ...value[value.MAINELEM][elemNew] };
         if (value.OTHERELEMENTS) {
-          value.OTHERELEMENTS.forEach((type) => {
+          value.OTHERELEMENTS.forEach(type => {
             if (!json[type]) {
               json[type] = {};
             }
