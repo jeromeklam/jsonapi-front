@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'test') {
  */
 function extractRelationships(relationships, { camelizeKeys }) {
   const ret = {};
-  keys(relationships).forEach((key) => {
+  keys(relationships).forEach(key => {
     const relationship = relationships[key];
     const name = camelizeKeys ? camelCase(key) : key;
     ret[name] = {};
@@ -126,7 +126,7 @@ function extractEntities(json, { camelizeKeys }, origin, mainElement = false) {
   let myLogger = log.getLogger('jsonapi-front.jsonApiNormalizer');
   myLogger.debug('jsonapi-front.jsonApiNormalizer.extractEntities.start');
   const ret = origin;
-  wrap(json).forEach((elem) => {
+  wrap(json).forEach(elem => {
     let locId = `${elem.id}`;
     if (locId === '') {
       locId = '0';
@@ -244,6 +244,9 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
   if (!json[key] && !ignoreAdd) {
     json = getNewNormalizedObject('Free_Test');
   }
+  if (!json.TOTAL || isNaN(json.TOTAL)) {
+    json.TOTAL = 0;
+  }
   if (value[key] && json[key]) {
     if (value.MAINELEM === key) {
       const ids = json.SORTEDELEMS;
@@ -252,24 +255,28 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
           json[key][elem] = { ...json[key][elem], ...value[key][elem] };
           if (json.SORTEDELEMS.indexOf(elem) < 0 && elem !== '0' && elem !== 0) {
             json.SORTEDELEMS.push(elem);
+            json.TOTAL++;
           }
-          if (json.OTHERELEMENTS) {
-            json.OTHERELEMENTS.forEach((type) => {
-              if (value[type]) {
-                json[type] = { ...json[type], ...value[type] };
+          if (value.OTHERELEMENTS) {
+            value.OTHERELEMENTS.forEach((type) => {
+              if (!json[type]) {
+                json[type] = {};
               }
+              json[type] = { ...json[type], ...value[type] };
             });
           }
         } else if (!ignoreAdd) {
           json[key] = { ...json[key], ...value[key] };
           if (elem !== '0' && elem !== 0) {
             json.SORTEDELEMS.push(elem);
+            json.TOTAL++;
           }
-          if (json.OTHERELEMENTS) {
-            json.OTHERELEMENTS.forEach((type) => {
-              if (value[type]) {
-                json[type] = { ...json[type], ...value[type] };
+          if (value.OTHERELEMENTS) {
+            value.OTHERELEMENTS.forEach((type) => {
+              if (!json[type]) {
+                json[type] = {};
               }
+              json[type] = { ...json[type], ...value[type] };
             });
           }
         }
@@ -281,15 +288,17 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
         });
         if (found >= 0) {
           json[key][elemNew] = { ...value[key][elemNew] };
-          if (json.OTHERELEMENTS) {
-            json.OTHERELEMENTS.forEach((type) => {
-              if (value[type]) {
-                json[type] = { ...json[type], ...value[type] };
+          if (value.OTHERELEMENTS) {
+            value.OTHERELEMENTS.forEach((type) => {
+              if (!json[type]) {
+                json[type] = {};
               }
+              json[type] = { ...json[type], ...value[type] };
             });
           }
           return true;
         }
+        return false;
       });
     }
     json.length = json.SORTEDELEMS.length;
@@ -300,11 +309,12 @@ export function normalizedObjectUpdate(json, key, value, ignoreAdd = true) {
       });
       if (found >= 0) {
         json[value.MAINELEM][elemNew] = { ...value[value.MAINELEM][elemNew] };
-        if (json.OTHERELEMENTS) {
-          json.OTHERELEMENTS.forEach((type) => {
-            if (value[type]) {
-              json[type] = { ...json[type], ...value[type] };
+        if (value.OTHERELEMENTS) {
+          value.OTHERELEMENTS.forEach((type) => {
+            if (!json[type]) {
+              json[type] = {};
             }
+            json[type] = { ...json[type], ...value[type] };
           });
         }
         return true;
@@ -396,7 +406,7 @@ export function jsonApiNormalizer(json, origin = { errors: [] }, opts = {}) {
     const uniqueSet = new Set(origin.SORTEDELEMS);
     origin.SORTEDELEMS = [...uniqueSet];
   }
-  origin.TOTAL = Array.isArray(origin.SORTEDELEMS) ? origin.SORTEDELEMS.length : false;
+  origin.TOTAL = Array.isArray(origin.SORTEDELEMS) ? origin.SORTEDELEMS.length : 0;
   if (json.meta && json.meta.count) {
     origin.TOTAL = json.meta.count;
   }

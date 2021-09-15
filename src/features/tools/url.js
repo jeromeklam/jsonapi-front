@@ -81,30 +81,27 @@ export function objectToQueryString(queryObj, options = { emptyBrackets: true },
       l_nesting_start += '[';
       l_nesting_end += ']';
     }
-    const numKey = options && options.numericKeys && options.numericKeys === true ? true : false;
-    const emptyBrackets = options && options.emptyBrackets && options.emptyBrackets === true ? true : false;
     const pairs = Object.entries(queryObj).map(([key, val]) => {
-      if (val !== null && typeof val === 'object') {
+      if (val !== null && typeof val === 'object' && !(val instanceof Date)) {
         myLogger.info('jsonapi-front.objectToQueryString.end');
-        if (val && val instanceof Date) {
-          let param = l_nesting_start + (isNaN(key) || numKey ? key : '') + l_nesting_end;
-          if (!emptyBrackets && param === nesting_start + '[]') {
-            param = nesting_start;
-          }
-          return [param, val.toISOString()].join('=');
-        }
         return objectToQueryString(val, options, l_nesting_start + `${key}` + l_nesting_end, level + 1);
       } else {
+        const numKey = options && options.numericKeys && options.numericKeys === true ? true : false;
+        const emptyBrackets = options && options.emptyBrackets && options.emptyBrackets === true ? true : false;
         let param = l_nesting_start + (isNaN(key) || numKey ? key : '') + l_nesting_end;
         if (!emptyBrackets && param === nesting_start + '[]') {
           param = nesting_start;
         }
         if (val !== null) {
-          if (val === true) {
-            val = 1;
+          if (val instanceof Date) {
+            val = val.toISOString();
           } else {
-            if (val === false) {
-              val = 0;
+            if (val === true) {
+              val = 1;
+            } else {
+              if (val === false) {
+                val = 0;
+              }
             }
           }
           myLogger.info('jsonapi-front.objectToQueryString.end');
