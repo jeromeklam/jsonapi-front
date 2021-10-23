@@ -1,4 +1,4 @@
-export { getNewModel, normalizedObjectModeler, normalizedObjectFirstModel } from './model';
+export { getNewModel, normalizedObjectModeler, normalizedObjectFirstModel, isEmptyModel } from './model';
 export { getNewJsonApi, getJsonApi, getJsonApiWithRelationships } from './jsonapi';
 export {
   getNewNormalizedObject,

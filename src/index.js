@@ -3,6 +3,7 @@ export {
   getNewModel,
   normalizedObjectModeler,
   normalizedObjectFirstModel,
+  isEmptyModel,
 } from './features/tools/model';
 export {
   getNewJsonApi,

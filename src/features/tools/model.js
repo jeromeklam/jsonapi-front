@@ -6,10 +6,10 @@
  * get uniqueId
  *
  *  @ignore
- * 
+ *
  * @param {String} pObjectName - Nom de l'objet
  * @param {Mixed} pId - Identifiant de l'object
- * 
+ *
  * @return {String}
  */
 export function uniqueId(pObjectName, pId) {
@@ -21,16 +21,16 @@ export function uniqueId(pObjectName, pId) {
 
 /**
  * setModelValue : Affecte une valeur à une clef d'un modèle, niveaux séparés par .
- * 
+ *
  * @param pModel {Object} - Le modèle
  * @param pKey {String} - La clef à mettre à jour
  * @param pValue {Mixed} - La valeur à affecter
  */
- export function setModelValue(pModel, pKey, pValue) {
+export function setModelValue(pModel, pKey, pValue) {
   try {
-    let datas = null;
+    const datas = null;
     let fromObj = pModel;
-    let elems = pKey.split('.');
+    const elems = pKey.split('.');
     let first = null;
     while (elems.length > 0) {
       if (first !== null) {
@@ -42,7 +42,7 @@ export function uniqueId(pObjectName, pId) {
   } catch (ex) {
     console.error(ex);
   }
-};
+}
 
 /**
  * getNewModel : Retourne un nouveau modèle de travail
@@ -66,6 +66,26 @@ export function getNewModel(pType, pId, pAttributes = {}) {
     return { ...pAttributes, ...newItem };
   }
   return newItem;
+}
+
+/**
+ * Is an empty model ?
+ *
+ * @param {Object} pModel
+ *
+ * @returns {Boolean}
+ */
+export function isEmptyModel(pModel) {
+  if (!pModel) {
+    return true;
+  }
+  if (!pModel.id) {
+    return true;
+  }
+  if (pModel.id === '' || pModel.id === 0 || pModel.id === '0') {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -133,7 +153,7 @@ function buildModelRelationship(
  * @param cache {Object} - Champ technique cache
  * @param level {number} - Champ technique niveau
  * @param done {Object} - Champ technique terminé
- * 
+ *
  * @return {Object}
  */
 export function normalizedObjectModeler(

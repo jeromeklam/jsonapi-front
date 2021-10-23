@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-front",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "ES6 JsonApi Tools",
   "keywords": [
     "jsonapi"
