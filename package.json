@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-front",
-  "version": "3.6.2",
+  "version": "3.7.0",
   "description": "ES6 JsonApi Tools",
   "keywords": [
     "jsonapi"
@@ -42,8 +42,8 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "lodash": "^4.17.19",
-    "loglevel": "^1.6.8"
+    "lodash": "^4.17.21",
+    "loglevel": "^1.8.1"
   },
   "jest": {
     "verbose": true,
